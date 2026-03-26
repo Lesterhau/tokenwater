@@ -3,1218 +3,1525 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TokenWater — AI Water Efficiency Tracker</title>
+<title>TokenWater — AI Water Tracker</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Barlow:wght@400;500;600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap');
 
   :root {
-    --water: #0ea5e9;
-    --water-deep: #0369a1;
-    --water-light: #bae6fd;
-    --surface: #0c1824;
-    --surface-2: #112233;
-    --surface-3: #1a3448;
-    --text: #e0f2fe;
-    --text-dim: #7aa3c0;
-    --accent: #38bdf8;
-    --warn: #f59e0b;
-    --good: #10b981;
-    --bad: #ef4444;
-    --border: rgba(56,189,248,0.15);
+    --blue-900: #0c2340;
+    --blue-800: #0f3460;
+    --blue-700: #1a5276;
+    --blue-600: #1a73a7;
+    --blue-500: #2196c4;
+    --blue-400: #42a8d4;
+    --blue-300: #7ec8e3;
+    --blue-200: #b3dff0;
+    --blue-100: #ddf0f8;
+    --blue-50:  #f0f8fd;
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-400: #94a3b8;
+    --gray-600: #475569;
+    --gray-800: #1e293b;
+    --green: #059669;
+    --green-light: #d1fae5;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-md: 0 10px 20px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04);
+    --radius: 10px;
+    --radius-sm: 6px;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--surface);
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: var(--white);
+    color: var(--gray-800);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 50% at 20% 80%, rgba(14,165,233,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(3,105,161,0.06) 0%, transparent 50%),
-      radial-gradient(ellipse 100% 60% at 50% 100%, rgba(14,165,233,0.04) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    max-width: 960px;
-    margin: 0 auto;
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
     padding: 0 24px;
-    position: relative;
-    z-index: 1;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
-  header {
-    padding: 48px 0 32px;
-    border-bottom: 1px solid var(--border);
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .logo {
-    display: flex;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-
-  .logo-mark {
-    font-family: 'Instrument Serif', serif;
-    font-size: 2.4rem;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-  }
-
-  .logo-tag {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-  }
-
-  .tagline {
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
-    font-style: italic;
-  }
-
-  .tabs {
-    display: flex;
-    gap: 0;
-    margin: 32px 0 0;
-    border-bottom: 1px solid var(--border);
-    overflow-x: auto;
-  }
-
-  .tab {
-    padding: 10px 20px;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    cursor: pointer;
-    border: none;
-    background: none;
-    font-family: inherit;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .tab:hover { color: var(--accent); }
-  .tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
-
-  .panel { display: none; padding: 32px 0; }
-  .panel.active { display: block; }
-
-  .section-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .platform-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .platform-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 20px;
-    transition: border-color 0.2s;
-  }
-
-  .platform-card:hover { border-color: rgba(56,189,248,0.3); }
-  .platform-card.connected { border-color: rgba(16,185,129,0.3); }
-  .platform-card.connected .platform-status { color: var(--good); }
-
-  .platform-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-  }
-
-  .platform-name {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1.1rem;
-    color: var(--text);
-  }
-
-  .platform-org {
-    font-size: 0.6rem;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    margin-top: 2px;
-  }
-
-  .platform-status {
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-
-  .platform-card input {
-    width: 100%;
-    background: var(--surface-3);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 8px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text);
-    margin-bottom: 8px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .platform-card input:focus { border-color: var(--accent); }
-  .platform-card input::placeholder { color: var(--text-dim); }
-
-  .platform-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 4px;
-  }
-
-  .btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 7px 14px;
-    border-radius: 2px;
-    cursor: pointer;
-    border: 1px solid;
-    transition: all 0.15s;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--surface);
-  }
-  .btn-primary:hover { background: var(--water-light); border-color: var(--water-light); }
-
-  .btn-ghost {
-    background: transparent;
-    border-color: var(--border);
-    color: var(--text-dim);
-  }
-  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-
-  .btn-danger {
-    background: transparent;
-    border-color: rgba(239,68,68,0.3);
-    color: var(--bad);
-  }
-  .btn-danger:hover { background: rgba(239,68,68,0.1); }
-
-  .btn-full { width: 100%; }
-
-  .phase-badge {
-    font-size: 0.55rem;
-    padding: 2px 6px;
-    border-radius: 2px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .phase-1 { background: rgba(16,185,129,0.15); color: var(--good); border: 1px solid rgba(16,185,129,0.3); }
-  .phase-2 { background: rgba(245,158,11,0.15); color: var(--warn); border: 1px solid rgba(245,158,11,0.3); }
-  .phase-3 { background: rgba(100,116,139,0.15); color: #64748b; border: 1px solid rgba(100,116,139,0.3); }
-
-  /* ── LOG ─────────────────────────────── */
-  .log-form {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    gap: 12px;
-    align-items: end;
-  }
-
-  .field label {
-    display: block;
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 6px;
-  }
-
-  .field select, .field input[type="number"] {
-    width: 100%;
-    background: var(--surface-3);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 8px 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .field select:focus, .field input:focus { border-color: var(--accent); }
-
-  .usage-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.72rem;
-  }
-
-  .usage-table th {
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    padding: 8px 12px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .usage-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid rgba(56,189,248,0.06);
-    color: var(--text);
-  }
-
-  .usage-table tr:hover td { background: rgba(56,189,248,0.03); }
-
-  /* ── DASHBOARD ───────────────────────── */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-
-  .stat-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 20px 16px;
-    text-align: center;
-  }
-
-  .stat-value {
-    font-family: 'Instrument Serif', serif;
-    font-size: 2rem;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-
-  .stat-label {
-    font-size: 0.58rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-
-  .comparison-section {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-
-  .comparison-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1.2rem;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .comparison-sub {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    margin-bottom: 20px;
-    font-style: italic;
-  }
-
-  .bar-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .bar-label {
-    font-size: 0.68rem;
-    color: var(--text-dim);
-    width: 80px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  .bar-track {
-    flex: 1;
-    height: 8px;
-    background: var(--surface-3);
-    border-radius: 1px;
-    overflow: hidden;
-  }
-
-  .bar-fill {
-    height: 100%;
-    border-radius: 1px;
-    transition: width 0.8s ease;
-  }
-
-  .bar-you { background: var(--accent); }
-  .bar-avg { background: var(--text-dim); }
-  .bar-best { background: var(--good); }
-
-  .bar-val {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    width: 90px;
-    flex-shrink: 0;
-  }
-
-  .platform-breakdown {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-
-  .breakdown-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1.2rem;
-    color: var(--text);
-    margin-bottom: 16px;
-  }
-
-  .breakdown-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-
-  .breakdown-name {
-    font-size: 0.68rem;
-    color: var(--text-dim);
-    width: 100px;
-    flex-shrink: 0;
-  }
-
-  .breakdown-bar-track {
-    flex: 1;
-    height: 6px;
-    background: var(--surface-3);
-    border-radius: 1px;
-    overflow: hidden;
-  }
-
-  .breakdown-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 1px;
-    opacity: 0.7;
-    transition: width 0.6s ease;
-  }
-
-  .breakdown-val {
-    font-size: 0.63rem;
-    color: var(--text-dim);
-    width: 80px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  /* ── MEMORY ──────────────────────────── */
-  .memory-grid { display: grid; gap: 16px; }
-
-  .memory-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 20px;
-  }
-
-  .memory-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-
-  .memory-platform {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1rem;
-  }
-
-  .memory-instructions {
-    font-size: 0.62rem;
-    color: var(--text-dim);
-    font-style: italic;
-    margin-bottom: 10px;
-    line-height: 1.6;
-  }
-
-  .memory-snippet {
-    background: var(--surface-3);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 14px;
-    font-size: 0.68rem;
-    line-height: 1.7;
-    color: var(--water-light);
-    white-space: pre-wrap;
-    margin-bottom: 12px;
-    font-style: italic;
-  }
-
-  .copy-row {
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
+  .logo-drop {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logo-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--blue-700);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .logo-cap {
+    font-size: 1.45rem;
+    font-weight: 300;
+    vertical-align: baseline;
+    letter-spacing: 0.1em;
+  }
+
+  .logo-version {
+    font-size: 0.68rem;
+    color: var(--gray-400);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
+
+  .header-link {
+    font-size: 0.8rem;
+    color: var(--blue-600);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .header-link:hover { text-decoration: underline; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(160deg, var(--blue-50) 0%, var(--white) 60%);
+    border-bottom: 1px solid var(--blue-100);
+    padding: 64px 24px 56px;
+  }
+
+  .hero-inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--blue-100);
+    color: var(--blue-700);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    color: var(--blue-900);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+    max-width: 640px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--blue-600);
+  }
+
+  .hero-body {
+    font-size: 1rem;
+    color: var(--gray-600);
+    max-width: 560px;
+    line-height: 1.75;
+    margin-bottom: 28px;
+  }
+
+  .hero-callout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green-light);
+    color: var(--green);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 12px 18px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(5,150,105,0.2);
+    width: fit-content;
+    line-height: 1.4;
+    white-space: normal;
+    word-spacing: normal;
+    letter-spacing: normal;
+  }
+
+  /* ── IMPACT BAR ── */
+  .impact-bar {
+    background: var(--blue-800);
+    color: var(--blue-200);
+    padding: 14px 24px;
+  }
+
+  .impact-bar-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .impact-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .impact-num {
+    font-family: 'Barlow', sans-serif;
+    font-size: 1.4rem;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .impact-label {
+    font-size: 0.72rem;
+    color: var(--blue-300);
+    letter-spacing: 0.03em;
+  }
+
+  .impact-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--blue-600);
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+  }
+
+  /* ── STEPS ── */
+  .step {
+    margin-bottom: 56px;
+  }
+
+  .step-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--blue-600);
+    color: var(--white);
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue-600);
+  }
+
+  .step-title {
+    font-family: 'Barlow', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--blue-900);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-desc {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    line-height: 1.75;
+    max-width: 580px;
+    margin-bottom: 24px;
+  }
+
+  /* ── QUOTA ── */
+  .quota-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px;
+  }
+
+  .quota-top {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .quota-big {
+    font-family: 'Barlow', sans-serif;
+    font-size: 4rem;
+    font-weight: 600;
+    color: var(--blue-600);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .quota-right {
+    padding-bottom: 6px;
+  }
+
+  .quota-unit {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--blue-700);
+    margin-bottom: 2px;
+  }
+
+  .quota-tokens {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+  }
+
+  input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 5px;
+    background: var(--blue-100);
+    border-radius: 3px;
+    outline: none;
+    margin-bottom: 10px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--blue-600);
+    cursor: pointer;
+    border: 3px solid var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--blue-600);
+    cursor: pointer;
+    border: 3px solid var(--white);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .quota-marks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--gray-400);
+    margin-bottom: 20px;
+  }
+
+  .quota-divider {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin-bottom: 16px;
+  }
+
+  .quota-context {
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  /* ── PLATFORMS ── */
+  .platform-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .platform-row {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .platform-row:hover {
+    border-color: var(--blue-300);
+    background: var(--blue-50);
+  }
+
+  .platform-row.selected {
+    border-color: var(--blue-500);
+    background: var(--blue-50);
+  }
+
+  .pf-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 2px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    font-size: 0.7rem;
+    color: var(--white);
+  }
+
+  .platform-row.selected .pf-check {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+  }
+
+  .pf-name {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--gray-800);
+    flex: 1;
+  }
+
+  .pf-org {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+  }
+
+  .pf-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+
+  .badge-persistent {
+    background: var(--green-light);
+    color: var(--green);
+  }
+
+  .badge-session {
+    background: var(--amber-light);
+    color: var(--amber);
+  }
+
+  /* ── TRACKING CONSENT ── */
+  .consent-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-top: 24px;
+  }
+
+  .consent-title {
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--gray-800);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .consent-body {
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    line-height: 1.75;
+    margin-bottom: 18px;
+  }
+
+  .consent-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    margin-bottom: 20px;
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .consent-table th {
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 14px;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .consent-table td {
+    padding: 9px 14px;
+    border-top: 1px solid var(--gray-100);
+    color: var(--gray-600);
+    vertical-align: top;
+  }
+
+  .consent-table td:first-child {
+    font-weight: 600;
+    color: var(--gray-800);
+    font-family: monospace;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .consent-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .consent-btn {
+    flex: 1;
+    min-width: 160px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .consent-btn-in {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: var(--white);
+  }
+  .consent-btn-in:hover { background: var(--blue-700); }
+  .consent-btn-in.active { background: var(--blue-800); border-color: var(--blue-800); }
+
+  .consent-btn-out {
+    background: var(--white);
+    border-color: var(--gray-200);
+    color: var(--gray-600);
+  }
+  .consent-btn-out:hover { border-color: var(--gray-400); }
+  .consent-btn-out.active { background: var(--gray-100); border-color: var(--gray-400); color: var(--gray-800); }
+
+  .opt-out-note {
+    display: none;
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--amber);
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .opt-out-note.show { display: block; }
+
+  /* ── SNIPPETS ── */
+  .snippets-section {
+    display: none;
+  }
+  .snippets-section.show { display: block; }
+
+  .snippet-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .snippet-head {
+    padding: 18px 24px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .snippet-platform {
+    font-family: 'Barlow', sans-serif;
+    font-size: 1.15rem;
+    color: var(--blue-900);
+  }
+
+  .snippet-instructions {
+    padding: 18px 24px 0;
+  }
+
+  .instruction-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--blue-600);
+    margin-bottom: 10px;
+  }
+
+  .instruction-step {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 7px;
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    line-height: 1.5;
+    align-items: flex-start;
+  }
+
+  .instruction-n {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--blue-100);
+    color: var(--blue-700);
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .instruction-step a {
+    color: var(--blue-600);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .instruction-step a:hover { text-decoration: underline; }
+
+  .snippet-box {
+    margin: 16px 24px 0;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-size: 0.72rem;
+    line-height: 1.8;
+    color: var(--blue-800);
+    white-space: pre-wrap;
+    font-family: 'DM Sans', sans-serif;
+    font-style: italic;
+  }
+
+  .snippet-footer {
+    padding: 14px 24px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: 1.5px solid;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+
+  .btn-blue {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: var(--white);
+  }
+  .btn-blue:hover { background: var(--blue-700); border-color: var(--blue-700); }
+
+  .btn-outline {
+    background: var(--white);
+    border-color: var(--gray-200);
+    color: var(--gray-600);
+  }
+  .btn-outline:hover { border-color: var(--blue-300); color: var(--blue-700); }
+
   .copy-confirm {
-    font-size: 0.6rem;
-    color: var(--good);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--green);
     opacity: 0;
     transition: opacity 0.3s;
   }
   .copy-confirm.show { opacity: 1; }
 
-  /* ── REPORT ──────────────────────────── */
-  .report-card {
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 32px;
+  /* ── DONE ── */
+  .done-card {
+    display: none;
+    background: linear-gradient(135deg, var(--blue-50) 0%, var(--white) 100%);
+    border: 1.5px solid var(--blue-200);
+    border-radius: var(--radius);
+    padding: 36px;
+    margin-top: 48px;
+    text-align: center;
+  }
+  .done-card.show { display: block; }
+
+  .done-icon {
+    font-size: 2.5rem;
+    margin-bottom: 14px;
   }
 
-  .report-header {
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 20px;
-    margin-bottom: 24px;
-  }
-
-  .report-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1.8rem;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-
-  .report-date { font-size: 0.65rem; color: var(--text-dim); }
-
-  .report-section { margin-bottom: 24px; }
-
-  .report-section h3 {
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--accent);
+  .done-title {
+    font-family: 'Barlow', sans-serif;
+    font-size: 1.6rem;
+    color: var(--blue-900);
     margin-bottom: 12px;
   }
 
-  .report-body {
-    font-size: 0.78rem;
+  .done-body {
+    font-size: 0.88rem;
+    color: var(--gray-600);
     line-height: 1.8;
-    color: var(--text-dim);
+    max-width: 500px;
+    margin: 0 auto;
   }
 
-  .report-highlight { color: var(--text); font-weight: 700; }
+  /* ── ADVANCED ── */
+  .advanced-wrap {
+    margin-top: 64px;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 32px;
+  }
 
-  .water-fact {
-    background: rgba(14,165,233,0.06);
-    border-left: 3px solid var(--accent);
-    padding: 12px 16px;
+  .advanced-btn {
+    width: 100%;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.15s;
+  }
+  .advanced-btn:hover { border-color: var(--blue-300); color: var(--blue-700); }
+
+  .advanced-content { display: none; margin-top: 28px; }
+  .advanced-content.open { display: block; }
+
+  .advanced-section { margin-bottom: 36px; }
+
+  .advanced-section-title {
     font-size: 0.72rem;
-    line-height: 1.6;
-    color: var(--text-dim);
-    margin: 16px 0;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue-600);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .about-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .about-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 18px;
+  }
+
+  .about-card-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--blue-700);
+    margin-bottom: 8px;
+  }
+
+  .about-card-body {
+    font-size: 0.78rem;
+    color: var(--gray-600);
+    line-height: 1.7;
+  }
+
+  .about-card-body a { color: var(--blue-600); text-decoration: none; }
+  .about-card-body a:hover { text-decoration: underline; }
+
+  .api-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+
+  .api-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+  }
+
+  .api-card-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+    color: var(--gray-800);
+  }
+
+  .api-card-org {
+    font-size: 0.72rem;
+    color: var(--gray-400);
+    margin-bottom: 10px;
+  }
+
+  .api-card input {
+    width: 100%;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    font-family: monospace;
+    color: var(--gray-800);
+    outline: none;
+    margin-bottom: 8px;
+    transition: border-color 0.15s;
+  }
+  .api-card input:focus { border-color: var(--blue-400); }
+  .api-card input::placeholder { color: var(--gray-400); }
+
+  /* ── LOG ── */
+  .log-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 5px;
+  }
+
+  .field select, .field input[type="number"] {
+    width: 100%;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--gray-800);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field select:focus, .field input:focus { border-color: var(--blue-400); }
+
+  .usage-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .usage-table th {
+    background: var(--gray-50);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    padding: 8px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .usage-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-700);
+  }
+
+  .usage-table tr:last-child td { border-bottom: none; }
+  .usage-table tr:hover td { background: var(--gray-50); }
+
+  .empty-state {
+    text-align: center;
+    padding: 32px;
+    color: var(--gray-400);
+    font-size: 0.82rem;
     font-style: italic;
   }
 
-  /* ── ABOUT ───────────────────────────── */
-  .about-body { max-width: 680px; }
-
-  .about-body h2 {
-    font-family: 'Instrument Serif', serif;
-    font-size: 1.5rem;
-    color: var(--text);
-    margin: 28px 0 12px;
+  /* ── FOOTER ── */
+  .site-footer {
+    background: var(--blue-900);
+    color: var(--blue-300);
+    padding: 32px 24px;
+    font-size: 0.78rem;
+    text-align: center;
+    line-height: 1.8;
   }
 
-  .about-body p {
-    font-size: 0.75rem;
-    line-height: 1.9;
-    color: var(--text-dim);
-    margin-bottom: 12px;
-  }
+  .site-footer a { color: var(--blue-200); }
 
-  .about-body a { color: var(--accent); text-decoration: none; }
-  .about-body a:hover { text-decoration: underline; }
-
-  .contrib-list { list-style: none; margin: 16px 0; }
-
-  .contrib-list li {
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    line-height: 1.6;
-  }
-
-  .contrib-list li::before { content: '→'; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
-
-  .cite-list { list-style: none; margin: 12px 0; }
-  .cite-list li {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    padding: 4px 0 4px 16px;
-    border-left: 2px solid var(--border);
-    margin-bottom: 6px;
-    line-height: 1.6;
-  }
-
-  /* ── TOAST ───────────────────────────── */
+  /* ── TOAST ── */
   .toast {
     position: fixed;
     bottom: 24px;
     right: 24px;
-    background: var(--good);
-    color: var(--surface);
-    padding: 10px 20px;
-    border-radius: 2px;
-    font-size: 0.68rem;
-    letter-spacing: 0.05em;
+    background: var(--blue-800);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
     z-index: 1000;
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
     transition: all 0.2s;
     pointer-events: none;
+    box-shadow: var(--shadow-md);
   }
   .toast.show { opacity: 1; transform: translateY(0); }
 
-  /* ── MISC ────────────────────────────── */
-  .empty-state {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--text-dim);
-    font-size: 0.72rem;
-    font-style: italic;
-  }
-
-  .data-controls {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 16px;
-  }
-
-  @media (max-width: 700px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px) {
     .form-row { grid-template-columns: 1fr 1fr; }
-    .tabs { overflow-x: auto; }
+    .about-cards { grid-template-columns: 1fr; }
+    .impact-bar-inner { gap: 16px; }
+    .hero-title { font-size: 1.8rem; }
+    .quota-big { font-size: 3rem; }
+    .consent-options { flex-direction: column; }
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
+
+<!-- ── HEADER ── -->
+<header class="site-header">
+  <div class="header-inner">
     <div class="logo">
-      <span class="logo-mark">TokenWater</span>
-      <span class="logo-tag">v0.1.0 — Open Source</span>
+      <svg class="logo-drop" viewBox="0 0 32 32" fill="none">
+        <path d="M16 4 C16 4 6 14 6 20 C6 25.5 10.5 30 16 30 C21.5 30 26 25.5 26 20 C26 14 16 4 16 4Z" fill="#1a73a7" opacity="0.15"/>
+        <path d="M16 8 C16 8 8 16 8 21 C8 25.4 11.6 29 16 29 C20.4 29 24 25.4 24 21 C24 16 16 8 16 8Z" fill="#1a73a7" opacity="0.35"/>
+        <path d="M16 13 C16 13 10 19 10 22.5 C10 25.5 12.7 28 16 28 C19.3 28 22 25.5 22 22.5 C22 19 16 13 16 13Z" fill="#1a73a7"/>
+      </svg>
+      <span class="logo-name"><span class="logo-cap">T</span>OKEN<span class="logo-cap">W</span>ATER</span>
+      <span class="logo-version">v1.0</span>
     </div>
-    <p class="tagline">Track the water cost of your AI usage — because every token has a price you can't see.</p>
-  </header>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('connect')">Connect</button>
-    <button class="tab" onclick="switchTab('log')">Log Usage</button>
-    <button class="tab" onclick="switchTab('dashboard')">Dashboard</button>
-    <button class="tab" onclick="switchTab('memory')">Memory Snippets</button>
-    <button class="tab" onclick="switchTab('report')">Weekly Report</button>
-    <button class="tab" onclick="switchTab('about')">About / Contribute</button>
+    <a href="https://github.com/Lesterhau/tokenwater" target="_blank" class="header-link">GitHub →</a>
   </div>
+</header>
 
-  <!-- ── CONNECT ── -->
-  <div id="panel-connect" class="panel active">
-    <p class="section-label">Phase 1 — Core Platforms (Active)</p>
-    <div class="platform-grid" id="platform-grid-p1"></div>
-    <p class="section-label">Phase 2 — Expanding Coverage (Needs Contributors)</p>
-    <div class="platform-grid" id="platform-grid-p2"></div>
-    <p class="section-label">Phase 3 — Community Additions</p>
-    <div class="platform-grid" id="platform-grid-p3"></div>
-  </div>
-
-  <!-- ── LOG ── -->
-  <div id="panel-log" class="panel">
-    <p class="section-label">Manual Usage Entry</p>
-    <div class="log-form">
-      <div class="form-row">
-        <div class="field">
-          <label>Platform</label>
-          <select id="log-platform"><option value="">Select platform...</option></select>
-        </div>
-        <div class="field">
-          <label>Input Tokens</label>
-          <input type="number" id="log-input" placeholder="e.g. 500" min="0">
-        </div>
-        <div class="field">
-          <label>Output Tokens</label>
-          <input type="number" id="log-output" placeholder="e.g. 800" min="0">
-        </div>
-        <div>
-          <button class="btn btn-primary" onclick="logUsage()">Log →</button>
-        </div>
-      </div>
-      <p style="font-size:0.6rem;color:var(--text-dim);margin-top:12px;font-style:italic;">
-        Token counts are in every major API response object: usage.input_tokens + usage.output_tokens. Check your API console or the network tab.
-      </p>
+<!-- ── IMPACT BAR ── -->
+<div class="impact-bar">
+  <div class="impact-bar-inner">
+    <div class="impact-stat">
+      <div class="impact-num" id="stat-installs">—</div>
+      <div class="impact-label">installations</div>
     </div>
-    <p class="section-label">Usage History</p>
-    <div class="data-controls">
-      <button class="btn btn-danger" onclick="clearLog()">Clear All</button>
+    <div class="impact-divider"></div>
+    <div class="impact-stat">
+      <div class="impact-num" id="stat-tokens-tracked">—</div>
+      <div class="impact-label">tokens being tracked weekly</div>
     </div>
-    <div id="usage-log-container">
-      <div class="empty-state">No usage logged yet. Add your first entry above.</div>
+    <div class="impact-divider"></div>
+    <div class="impact-stat">
+      <div class="impact-num" id="stat-water-tracked">—</div>
+      <div class="impact-label">liters made visible weekly</div>
     </div>
-  </div>
-
-  <!-- ── DASHBOARD ── -->
-  <div id="panel-dashboard" class="panel">
-    <p class="section-label">This Week at a Glance</p>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-value" id="stat-tokens">0</div>
-        <div class="stat-label">Total Tokens</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="stat-water">0 ml</div>
-        <div class="stat-label">Est. Water Used</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="stat-sessions">0</div>
-        <div class="stat-label">Sessions Logged</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="stat-vs-avg">—</div>
-        <div class="stat-label">vs. Avg User</div>
-      </div>
-    </div>
-
-    <div class="comparison-section">
-      <div class="comparison-title">How You Compare</div>
-      <div class="comparison-sub">Estimated weekly water consumption by user tier — ~100ml per 1K tokens (Li et al. 2023)</div>
-      <div class="bar-row">
-        <div class="bar-label">You</div>
-        <div class="bar-track"><div class="bar-fill bar-you" id="bar-you" style="width:0%"></div></div>
-        <div class="bar-val" id="bar-you-val">0 ml</div>
-      </div>
-      <div class="bar-row">
-        <div class="bar-label">Avg User</div>
-        <div class="bar-track"><div class="bar-fill bar-avg" style="width:60%"></div></div>
-        <div class="bar-val">~1,500 ml/wk</div>
-      </div>
-      <div class="bar-row">
-        <div class="bar-label">Efficient</div>
-        <div class="bar-track"><div class="bar-fill bar-best" style="width:25%"></div></div>
-        <div class="bar-val">~600 ml/wk</div>
-      </div>
-    </div>
-
-    <div class="platform-breakdown" id="platform-breakdown">
-      <div class="breakdown-title">Usage by Platform</div>
-      <div id="breakdown-rows"><div class="empty-state" style="padding:16px 0;">No data yet.</div></div>
-    </div>
-  </div>
-
-  <!-- ── MEMORY SNIPPETS ── -->
-  <div id="panel-memory" class="panel">
-    <p class="section-label">Ready-to-Paste Memory Snippets</p>
-    <div class="memory-grid" id="memory-grid"></div>
-  </div>
-
-  <!-- ── WEEKLY REPORT ── -->
-  <div id="panel-report" class="panel">
-    <div class="report-card">
-      <div class="report-header">
-        <div class="report-title">Weekly Usage Report</div>
-        <div class="report-date" id="report-date"></div>
-      </div>
-      <div class="report-section">
-        <h3>Water Consumption</h3>
-        <div class="report-body" id="report-water-section">
-          Log some usage to generate your report.
-        </div>
-      </div>
-      <div class="report-section">
-        <h3>Platform Breakdown</h3>
-        <div class="report-body" id="report-platform-section">—</div>
-      </div>
-      <div class="report-section">
-        <h3>Context</h3>
-        <div class="water-fact" id="report-fact">
-          "Training a single large language model can consume as much water as the lifetime drinking water supply of several hundred people." — Li et al., Making AI Less Thirsty (2023)
-        </div>
-      </div>
-      <div class="report-section">
-        <h3>Methodology</h3>
-        <div class="report-body">
-          Water estimate: ~100ml per 1,000 tokens. Based on average cooling and electricity generation water intensity for major US data centers (Li et al. 2023; Luccioni et al. 2023). This is a proxy metric — actual consumption varies by provider, model, and data center location. Token counts sourced from API response objects. See About tab for full citations.
-        </div>
-      </div>
-      <div style="margin-top:24px;">
-        <button class="btn btn-primary" onclick="copyReport()">Copy Report Text</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── ABOUT / CONTRIBUTE ── -->
-  <div id="panel-about" class="panel">
-    <div class="about-body">
-      <h2>What Is This</h2>
-      <p>TokenWater tracks your token usage across AI platforms and estimates the water consumed by data centers to serve your requests. It does not send data anywhere. Everything lives in your browser's localStorage.</p>
-      <p>AI infrastructure is invisible infrastructure. The servers running Claude, ChatGPT, Gemini, and Grok consume enormous amounts of water for cooling and electricity generation. Microsoft used 6.4 billion liters in 2022 — up 34% year-over-year. Google: +20% same period. Individual users have no way to track their contribution to that demand. TokenWater is that tool.</p>
-
-      <h2>The Water Math</h2>
-      <p>The proxy: ~100ml of water consumed per 1,000 tokens processed. This estimate is derived from data center power usage effectiveness (PUE) data and cooling water intensity ratios for major US cloud providers. It is a directional estimate, not an exact measurement. Actual consumption varies by provider, region, season, and model architecture.</p>
-      <ul class="cite-list">
-        <li>Li, P. et al. (2023). "Making AI Less Thirsty: Uncovering and Addressing the Secret Water Footprint of AI Models." UC Riverside. <a href="https://arxiv.org/abs/2304.03271" target="_blank">arxiv.org/abs/2304.03271</a></li>
-        <li>Luccioni, A.S. et al. (2023). "Power Hungry Processing: Watts Driving the Cost of AI Deployment?" <a href="https://arxiv.org/abs/2311.16863" target="_blank">arxiv.org/abs/2311.16863</a></li>
-        <li>Microsoft 2022 Environmental Sustainability Report</li>
-        <li>Google 2022 Environmental Report</li>
-      </ul>
-
-      <h2>The Behavior Change Mechanic</h2>
-      <p>Social comparison, not guilt. The same mechanic that drove a 2% national reduction in household energy consumption via Opower's neighbor comparison mailings. "You used 34% fewer tokens than the average user this week" is more effective than any amount of environmental messaging. The comparison is built in.</p>
-
-      <h2>Why Memory Snippets</h2>
-      <p>You can't write directly to most LLMs' memory systems via the API. TokenWater generates personalized snippets — updated weekly with your actual numbers — that you paste into each platform's manual memory settings. It's a workaround, not a hack. It works.</p>
-
-      <h2>Platform Coverage</h2>
-      <p><strong style="color:var(--text)">Phase 1 (Active):</strong> Claude, ChatGPT, Gemini, Grok, DeepSeek, Perplexity</p>
-      <p><strong style="color:var(--text)">Phase 2 (Needs contributors):</strong> Meta AI / Llama 4, Mistral / Le Chat, Cohere Command, Microsoft Copilot, Qwen, Groq</p>
-      <p><strong style="color:var(--text)">Phase 3 (Community):</strong> Together AI, Hugging Face, AI21 / Jamba, Amazon Bedrock, Pi / Inflection, Fireworks AI, SiliconFlow, DeepSeek via Fireworks</p>
-
-      <h2>How to Contribute</h2>
-      <p>This is open source. MIT licensed. Zero dependencies. Single HTML file. You do not need to be a developer to contribute.</p>
-      <ul class="contrib-list">
-        <li>Write a Phase 2 or Phase 3 platform connector — API response format + token field names. Open a PR or just file an issue with the data.</li>
-        <li>Verify or update the water consumption math for a specific provider. We want better per-provider estimates, not just the global average.</li>
-        <li>Translate the app. Japanese, Spanish, Arabic, Hindi are highest-priority languages.</li>
-        <li>Write a browser extension wrapper that auto-captures token counts without manual entry. This is the highest-leverage expansion path.</li>
-        <li>Build the real-time token counting layer via streaming APIs. Currently manual entry only.</li>
-        <li>Add to METHODOLOGY.md with provider-specific PUE and water intensity data.</li>
-        <li>File a GitHub issue if the water estimate is wrong. Cite your source.</li>
-      </ul>
-
-      <h2>Who Built This</h2>
-      <p>Built by <a href="https://rlperspectives.com" target="_blank">Ryan Lester</a> — Navy veteran, economics student, foresight researcher. TokenWater started as a thought experiment about invisible infrastructure costs and became a tool because nothing like it existed. MIT licensed. Take it, improve it, redistribute it. Just cite your sources.</p>
-
-      <p style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);">
-        <a href="https://rlperspectives.com" target="_blank">RLPerspectives.com</a> &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; v0.1.0
-      </p>
+    <div class="impact-divider"></div>
+    <div class="impact-stat">
+      <div class="impact-num" id="stat-top-platform">—</div>
+      <div class="impact-label">top platform</div>
     </div>
   </div>
 </div>
 
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">💧 AI Infrastructure Accountability</div>
+    <h1 class="hero-title">Every prompt you send<br><em>costs water.</em><br>Now you can track it.</h1>
+    <p class="hero-body">AI data centers consumed billions of liters of water last year. Microsoft: +34%. Google: +20%. No one tells you your share. TokenWater generates a memory snippet you paste into your AI tools once — after that, your AI tracks your usage automatically.</p>
+    <div class="hero-callout">
+      <span style="flex-shrink:0;">✓</span>
+      <span>You do <strong>not</strong> need to keep this page open. Paste once. Done.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- STEP 1: QUOTA -->
+  <div class="step">
+    <div class="step-label">
+      <div class="step-num">1</div>
+      <div class="step-tag">Set your goal</div>
+    </div>
+    <h2 class="step-title">Choose your weekly water quota</h2>
+    <p class="step-desc">Your AI will track toward this limit and alert you automatically at 50%, 75%, 90%, and 95%. Every morning, your first conversation will show you yesterday's usage and your pace for the week.</p>
+    <div class="quota-card">
+      <div class="quota-top">
+        <div class="quota-big" id="quota-display">10L</div>
+        <div class="quota-right">
+          <div class="quota-unit">liters per week</div>
+          <div class="quota-tokens">~<span id="quota-tokens">100,000</span> tokens</div>
+        </div>
+      </div>
+      <input type="range" id="quota-slider" min="1" max="30" value="10" oninput="updateQuota(this.value)">
+      <div class="quota-marks">
+        <span>1L casual</span>
+        <span>3L regular</span>
+        <span>7L power</span>
+        <span>15L heavy</span>
+        <span>30L</span>
+      </div>
+      <hr class="quota-divider">
+      <p style="font-size:0.78rem;font-weight:600;color:var(--blue-600);margin-bottom:8px;" id="quota-comparison">≈ roughly one toilet flush per week</p>
+      <p class="quota-context" id="quota-context">Power user range. Long sessions, multiple platforms, research-heavy work. A single long research conversation typically uses 1–2L.</p>
+    </div>
+  </div>
+
+  <!-- STEP 2: PLATFORMS -->
+  <div class="step">
+    <div class="step-label">
+      <div class="step-num">2</div>
+      <div class="step-tag">Pick your tools</div>
+    </div>
+    <h2 class="step-title">Which AI platforms do you use?</h2>
+    <p class="step-desc">Select every tool you use regularly. You'll get a separate snippet for each. <span style="color:var(--green);font-weight:600;">Persistent Memory</span> platforms remember your tracking automatically — set it once and forget it. <span style="color:var(--amber);font-weight:600;">Session Only</span> platforms require pasting at the start of each conversation. Most people only bother with the persistent ones long-term.</p>
+    <div class="platform-list" id="platform-list"></div>
+
+    <!-- CONSENT -->
+    <div class="consent-card" id="consent-card" style="display:none;">
+      <div class="consent-title">
+        <span>🔒</span> Anonymous Impact Reporting
+      </div>
+      <p class="consent-body">
+        TokenWater counts your installation in a public community total — showing the world how many people are choosing to hold AI infrastructure accountable. <strong>We don't know who you are.</strong> No name, no email, no IP address, no location. Just an 8-character alphanumeric code embedded in your snippet that counts you once, across all your devices. To opt out, see Advanced settings below.
+      </p>
+      <table class="consent-table">
+        <thead>
+          <tr><th>What gets stored</th><th>Example</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>tw_id</td><td>tw_a3f9c2b1</td><td>Counts you once, not per device</td></tr>
+          <tr><td>event</td><td>snippet_copied</td><td>Distinguishes new installs from returning users refreshing their snippet — so we count you once, not once per refresh</td></tr>
+          <tr><td>platform</td><td>claude</td><td>Shows which tools people use</td></tr>
+          <tr><td>quota</td><td>10</td><td>Shows average awareness level</td></tr>
+          <tr><td>timestamp</td><td>2026-03-23</td><td>Measures community growth</td></tr>
+        </tbody>
+      </table>
+      <p class="consent-body" style="margin-bottom:16px;">
+        That's the full list. Nothing hidden. Your actual usage data stays in your AI's memory — we never see it.
+      </p>
+      <div class="consent-options">
+        <button class="consent-btn consent-btn-in active" id="btn-optin" onclick="setConsent(true)">
+          ✓ Count me in — I want to be part of this
+        </button>
+        <button class="consent-btn consent-btn-out" id="btn-optout" onclick="setConsent(false)">
+          Track me locally only
+        </button>
+      </div>
+      <p class="opt-out-note" id="opt-out-note">
+        Your tracking still works perfectly — you just won't be counted in the community total. The collective impact number only means something with enough people in it. But your call.
+      </p>
+    </div>
+  </div>
+
+  <!-- STEP 3: SNIPPETS -->
+  <div class="step snippets-section" id="snippets-section">
+    <div class="step-label">
+      <div class="step-num">3</div>
+      <div class="step-tag">Install your tracker</div>
+    </div>
+    <h2 class="step-title">Copy and paste your snippets</h2>
+    <p class="step-desc">Follow the exact steps for each platform. You're pasting into your AI's long-term memory — it only takes a minute and you only do it once. <strong>Come back every 4 weeks</strong> to grab a fresh snippet with updated benchmarks.</p>
+    <div id="snippets-container"></div>
+  </div>
+
+  <!-- DONE -->
+  <div class="done-card" id="done-card">
+    <div class="done-icon">💧</div>
+    <div class="done-title">You're set up. Close this tab.</div>
+    <p class="done-body">
+      Your AI tools will now track your water usage automatically.<br>
+      Every morning, your first conversation shows you yesterday's usage and your weekly pace.<br><br>
+      The only reason to come back here: refresh your snippet every 4 weeks, or change your quota.<br>
+      That's it.
+    </p>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="advanced-wrap">
+    <button class="advanced-btn" onclick="toggleAdvanced()">
+      <span>Advanced — manual log, API keys, methodology</span>
+      <span id="adv-arrow">▾</span>
+    </button>
+    <div class="advanced-content" id="advanced-content">
+
+      <div class="advanced-section">
+        <div class="advanced-section-title">Manual Usage Log</div>
+        <p style="font-size:0.82rem;color:var(--gray-600);line-height:1.7;margin-bottom:14px;">
+          Using the API directly? Log exact token counts here for a more precise water estimate.
+          Find them in your API response under <code style="font-size:0.75rem;color:var(--blue-700);">usage.input_tokens</code> and <code style="font-size:0.75rem;color:var(--blue-700);">usage.output_tokens</code>.
+        </p>
+        <div class="log-card">
+          <div class="form-row">
+            <div class="field">
+              <label>Platform</label>
+              <select id="log-platform"><option value="">Select...</option></select>
+            </div>
+            <div class="field">
+              <label>Input Tokens</label>
+              <input type="number" id="log-input" placeholder="e.g. 5000" min="0">
+            </div>
+            <div class="field">
+              <label>Output Tokens</label>
+              <input type="number" id="log-output" placeholder="e.g. 2000" min="0">
+            </div>
+            <div>
+              <button class="btn btn-blue" onclick="logUsage()">Log</button>
+            </div>
+          </div>
+        </div>
+        <div id="usage-log-container"><div class="empty-state">No entries yet.</div></div>
+      </div>
+
+      <div class="advanced-section">
+        <div class="advanced-section-title">API Keys (Optional — stored locally only)</div>
+        <div class="api-grid" id="api-key-grid"></div>
+      </div>
+
+      <div class="advanced-section">
+        <div class="advanced-section-title">The Water Math</div>
+        <div class="about-cards">
+          <div class="about-card">
+            <div class="about-card-title">The Proxy Metric</div>
+            <div class="about-card-body">~100ml of water consumed per 1,000 tokens processed. Derived from data center PUE data and cooling water intensity ratios. Directional estimate — actual consumption varies by provider, region, and model.</div>
+          </div>
+          <div class="about-card">
+            <div class="about-card-title">Sources</div>
+            <div class="about-card-body">
+              Li, P. et al. (2023). "Making AI Less Thirsty." UC Riverside. <a href="https://arxiv.org/abs/2304.03271" target="_blank">arxiv.org/abs/2304.03271</a><br><br>
+              Luccioni et al. (2023). "Power Hungry Processing." <a href="https://arxiv.org/abs/2311.16863" target="_blank">arxiv.org/abs/2311.16863</a>
+            </div>
+          </div>
+          <div class="about-card">
+            <div class="about-card-title">The Real Numbers</div>
+            <div class="about-card-body">Microsoft: 6.4 billion liters in 2022 (+34% YoY). Google: +20% same period. Neither provides per-user breakdowns. TokenWater is the individual meter that doesn't otherwise exist.</div>
+          </div>
+          <div class="about-card">
+            <div class="about-card-title">Built By</div>
+            <div class="about-card-body">
+              <a href="https://rlperspectives.com" target="_blank">Ryan Lester</a> — Navy veteran, economics student, foresight researcher at University of Houston. MIT licensed. <a href="https://github.com/Lesterhau/tokenwater" target="_blank">GitHub →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div style="margin-bottom:10px;">
+    Built by <a href="https://rlperspectives.com" target="_blank"><strong>Ryan Lester</strong></a> &nbsp;·&nbsp;
+    <a href="https://rlperspectives.com" target="_blank">RLPerspectives.com</a> &nbsp;·&nbsp;
+    Essays on systems, power, and the future
+  </div>
+  <div style="font-size:0.72rem;color:var(--blue-400);">
+    TokenWater — MIT License — 
+    <a href="https://github.com/Lesterhau/tokenwater" target="_blank">github.com/Lesterhau/tokenwater</a>
+    &nbsp;·&nbsp; Last updated: <span id="last-updated">March 2026</span>
+  </div>
+</footer>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════
-//  PLATFORM DATA
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+
+const WATER_RATE = 100; // ml per 1000 tokens
 
 const PLATFORMS = [
-  // Phase 1
-  { id:'claude',      name:'Claude',          org:'Anthropic',          phase:1, apiKeyLabel:'API Key (optional)',   placeholder:'sk-ant-...' },
-  { id:'chatgpt',     name:'ChatGPT',         org:'OpenAI',             phase:1, apiKeyLabel:'API Key (optional)',   placeholder:'sk-...' },
-  { id:'gemini',      name:'Gemini',          org:'Google DeepMind',    phase:1, apiKeyLabel:'API Key (optional)',   placeholder:'AIza...' },
-  { id:'grok',        name:'Grok',            org:'xAI',                phase:1, apiKeyLabel:'API Key (optional)',   placeholder:'xai-...' },
-  { id:'deepseek',    name:'DeepSeek',        org:'DeepSeek AI',        phase:1, apiKeyLabel:'API Key (optional)',   placeholder:'sk-...' },
-  { id:'perplexity',  name:'Perplexity',      org:'Perplexity AI',      phase:1, apiKeyLabel:'API Key (optional)',   placeholder:'pplx-...' },
-  // Phase 2
-  { id:'metaai',      name:'Meta AI / Llama 4', org:'Meta',             phase:2, apiKeyLabel:'API Key',             placeholder:'Connector in progress' },
-  { id:'mistral',     name:'Mistral / Le Chat', org:'Mistral AI',       phase:2, apiKeyLabel:'API Key',             placeholder:'Connector in progress' },
-  { id:'cohere',      name:'Cohere Command',  org:'Cohere',             phase:2, apiKeyLabel:'API Key',             placeholder:'Connector in progress' },
-  { id:'copilot',     name:'Microsoft Copilot', org:'Microsoft',        phase:2, apiKeyLabel:'API Key',             placeholder:'Connector in progress' },
-  { id:'qwen',        name:'Qwen',            org:'Alibaba Cloud',      phase:2, apiKeyLabel:'API Key',             placeholder:'Connector in progress' },
-  { id:'groq',        name:'Groq',            org:'Groq Inc.',          phase:2, apiKeyLabel:'API Key',             placeholder:'Connector in progress' },
-  // Phase 3
-  { id:'together',    name:'Together AI',     org:'Together AI',        phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-  { id:'hf',          name:'Hugging Face',    org:'HuggingFace',        phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-  { id:'ai21',        name:'AI21 / Jamba',    org:'AI21 Labs',          phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-  { id:'bedrock',     name:'Amazon Bedrock',  org:'Amazon Web Services',phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-  { id:'pi',          name:'Pi / Inflection', org:'Inflection AI',      phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-  { id:'fireworks',   name:'Fireworks AI',    org:'Fireworks AI',       phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-  { id:'siliconflow', name:'SiliconFlow',     org:'SiliconFlow',        phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-  { id:'dsfireworks', name:'DeepSeek via Fireworks', org:'Fireworks AI',phase:3, apiKeyLabel:'API Key',             placeholder:'Community addition' },
-];
-
-// water ml per 1000 tokens
-const WATER_RATE = 100;
-// Weekly averages for comparison bars (ml)
-const AVG_WEEKLY_ML  = 1500;
-const BEST_WEEKLY_ML = 600;
-const MAX_BAR_ML     = AVG_WEEKLY_ML * 1.5;
-
-// ══════════════════════════════════════════════════════════
-//  STATE — localStorage backed
-// ══════════════════════════════════════════════════════════
-
-function loadKeys() {
-  try { return JSON.parse(localStorage.getItem('aqm_keys') || '{}'); } catch { return {}; }
-}
-function saveKeys(k) { localStorage.setItem('aqm_keys', JSON.stringify(k)); }
-
-function loadLog() {
-  try { return JSON.parse(localStorage.getItem('aqm_log') || '[]'); } catch { return []; }
-}
-function saveLog(l) { localStorage.setItem('aqm_log', JSON.stringify(l)); }
-
-// ══════════════════════════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════════════════════════
-
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    const panels = ['connect','log','dashboard','memory','report','about'];
-    t.classList.toggle('active', panels[i] === name);
-  });
-  document.querySelectorAll('.panel').forEach(p => {
-    p.classList.toggle('active', p.id === 'panel-' + name);
-  });
-  if (name === 'dashboard') renderDashboard();
-  if (name === 'memory')    renderMemory();
-  if (name === 'report')    renderReport();
-  if (name === 'log')       renderLog();
-}
-
-// ══════════════════════════════════════════════════════════
-//  CONNECT TAB
-// ══════════════════════════════════════════════════════════
-
-function renderConnect() {
-  const keys = loadKeys();
-  [1,2,3].forEach(phase => {
-    const grid = document.getElementById('platform-grid-p' + phase);
-    grid.innerHTML = '';
-    PLATFORMS.filter(p => p.phase === phase).forEach(platform => {
-      const connected = !!keys[platform.id];
-      const card = document.createElement('div');
-      card.className = 'platform-card' + (connected ? ' connected' : '');
-      card.id = 'card-' + platform.id;
-      card.innerHTML = `
-        <div class="platform-header">
-          <div>
-            <div class="platform-name">${platform.name}</div>
-            <div class="platform-org">${platform.org}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-            <span class="phase-badge phase-${phase}">Phase ${phase}</span>
-            <span class="platform-status">${connected ? '● connected' : '○ not connected'}</span>
-          </div>
-        </div>
-        ${phase <= 1 ? `
-        <input type="password" id="key-${platform.id}" placeholder="${platform.placeholder}"
-          value="${connected ? '••••••••' : ''}"
-          onfocus="if(this.value==='••••••••')this.value=''"
-          onblur="if(!this.value)this.value='••••••••'">
-        <div class="platform-actions">
-          <button class="btn btn-primary" onclick="saveKey('${platform.id}')">Save Key</button>
-          ${connected ? `<button class="btn btn-ghost" onclick="removeKey('${platform.id}')">Remove</button>` : ''}
-        </div>
-        ` : `
-        <div style="font-size:0.62rem;color:var(--text-dim);font-style:italic;line-height:1.6;margin-top:4px;">
-          ${phase === 2 ? 'Connector in progress — open a GitHub issue to contribute this integration.' : 'Community addition — check the GitHub repo for status.'}
-        </div>
-        `}
-      `;
-      grid.appendChild(card);
-    });
-  });
-
-  // populate log platform select
-  const sel = document.getElementById('log-platform');
-  sel.innerHTML = '<option value="">Select platform...</option>';
-  PLATFORMS.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p.id;
-    opt.textContent = p.name;
-    sel.appendChild(opt);
-  });
-}
-
-function saveKey(id) {
-  const input = document.getElementById('key-' + id);
-  const val = input.value.trim();
-  if (!val || val === '••••••••') { showToast('Enter a valid API key'); return; }
-  const keys = loadKeys();
-  keys[id] = val;
-  saveKeys(keys);
-  showToast('Key saved — stored locally only');
-  renderConnect();
-}
-
-function removeKey(id) {
-  const keys = loadKeys();
-  delete keys[id];
-  saveKeys(keys);
-  showToast('Key removed');
-  renderConnect();
-}
-
-// ══════════════════════════════════════════════════════════
-//  LOG TAB
-// ══════════════════════════════════════════════════════════
-
-function logUsage() {
-  const platform = document.getElementById('log-platform').value;
-  const input    = parseInt(document.getElementById('log-input').value) || 0;
-  const output   = parseInt(document.getElementById('log-output').value) || 0;
-
-  if (!platform)         { showToast('Select a platform'); return; }
-  if (!input && !output) { showToast('Enter at least one token count'); return; }
-
-  const log = loadLog();
-  const p   = PLATFORMS.find(x => x.id === platform);
-  log.push({
-    id:        Date.now(),
-    platform:  platform,
-    name:      p ? p.name : platform,
-    input:     input,
-    output:    output,
-    total:     input + output,
-    water_ml:  Math.round((input + output) / 1000 * WATER_RATE),
-    ts:        new Date().toISOString(),
-  });
-  saveLog(log);
-
-  document.getElementById('log-input').value  = '';
-  document.getElementById('log-output').value = '';
-  showToast('Usage logged — ' + formatWater(Math.round((input+output)/1000*WATER_RATE)));
-  renderLog();
-}
-
-function renderLog() {
-  const log = loadLog();
-  const container = document.getElementById('usage-log-container');
-  if (!log.length) {
-    container.innerHTML = '<div class="empty-state">No usage logged yet. Add your first entry above.</div>';
-    return;
-  }
-  const rows = [...log].reverse().map(entry => `
-    <tr>
-      <td>${new Date(entry.ts).toLocaleDateString()}</td>
-      <td>${entry.name}</td>
-      <td>${entry.input.toLocaleString()}</td>
-      <td>${entry.output.toLocaleString()}</td>
-      <td>${entry.total.toLocaleString()}</td>
-      <td>${formatWater(entry.water_ml)}</td>
-      <td><button class="btn btn-ghost" style="padding:4px 8px;font-size:0.55rem;" onclick="deleteEntry(${entry.id})">✕</button></td>
-    </tr>
-  `).join('');
-  container.innerHTML = `
-    <table class="usage-table">
-      <thead><tr>
-        <th>Date</th><th>Platform</th><th>In Tokens</th><th>Out Tokens</th><th>Total</th><th>Water</th><th></th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-function deleteEntry(id) {
-  const log = loadLog().filter(e => e.id !== id);
-  saveLog(log);
-  renderLog();
-}
-
-function clearLog() {
-  if (!confirm('Clear all usage history? This cannot be undone.')) return;
-  saveLog([]);
-  renderLog();
-  showToast('Usage history cleared');
-}
-
-// ══════════════════════════════════════════════════════════
-//  DASHBOARD TAB
-// ══════════════════════════════════════════════════════════
-
-function getWeekLog() {
-  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  return loadLog().filter(e => new Date(e.ts).getTime() > cutoff);
-}
-
-function renderDashboard() {
-  const log       = getWeekLog();
-  const tokens    = log.reduce((s, e) => s + e.total, 0);
-  const water_ml  = Math.round(tokens / 1000 * WATER_RATE);
-  const sessions  = log.length;
-
-  document.getElementById('stat-tokens').textContent   = tokens > 1000 ? (tokens/1000).toFixed(1)+'K' : tokens.toLocaleString();
-  document.getElementById('stat-water').textContent    = formatWater(water_ml);
-  document.getElementById('stat-sessions').textContent = sessions;
-
-  // vs avg
-  const vsAvg = AVG_WEEKLY_ML > 0 ? Math.round((1 - water_ml / AVG_WEEKLY_ML) * 100) : 0;
-  const vsEl  = document.getElementById('stat-vs-avg');
-  if (sessions === 0) {
-    vsEl.textContent = '—';
-    vsEl.style.color = 'var(--text-dim)';
-  } else if (vsAvg > 0) {
-    vsEl.textContent = '-' + vsAvg + '%';
-    vsEl.style.color = 'var(--good)';
-  } else {
-    vsEl.textContent = '+' + Math.abs(vsAvg) + '%';
-    vsEl.style.color = 'var(--bad)';
-  }
-
-  // Comparison bars
-  const youPct = Math.min(100, (water_ml / MAX_BAR_ML) * 100);
-  document.getElementById('bar-you').style.width    = youPct + '%';
-  document.getElementById('bar-you-val').textContent = formatWater(water_ml);
-
-  // Platform breakdown
-  const byPlatform = {};
-  log.forEach(e => {
-    byPlatform[e.name] = (byPlatform[e.name] || 0) + e.water_ml;
-  });
-  const maxPlatformWater = Math.max(...Object.values(byPlatform), 1);
-  const breakdownRows = document.getElementById('breakdown-rows');
-  if (!Object.keys(byPlatform).length) {
-    breakdownRows.innerHTML = '<div class="empty-state" style="padding:16px 0;">No data yet.</div>';
-  } else {
-    breakdownRows.innerHTML = Object.entries(byPlatform)
-      .sort((a,b) => b[1]-a[1])
-      .map(([name, ml]) => `
-        <div class="breakdown-row">
-          <div class="breakdown-name">${name}</div>
-          <div class="breakdown-bar-track">
-            <div class="breakdown-bar-fill" style="width:${(ml/maxPlatformWater*100).toFixed(1)}%"></div>
-          </div>
-          <div class="breakdown-val">${formatWater(ml)}</div>
-        </div>`).join('');
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-//  MEMORY SNIPPETS
-// ══════════════════════════════════════════════════════════
-
-const MEMORY_PLATFORMS = [
+  // ── PERSISTENT MEMORY ──────────────────────────────────
   {
-    id: 'claude',
-    name: 'Claude',
-    instructions: 'Go to Claude.ai → Settings → Memory. Paste this snippet and save. Claude will reference it in future conversations.',
-    snippet: (stats) => `[TokenWater Weekly Summary — ${new Date().toLocaleDateString()}]
-I track my AI water consumption via TokenWater. This week:
-- Total tokens used across all platforms: ${stats.tokens.toLocaleString()}
-- Estimated water consumed: ${formatWater(stats.water_ml)}
-- Sessions logged: ${stats.sessions}
-- vs. average user: ${stats.vsAvg}
-Please factor this into any suggestions about prompt efficiency or conversation length.`
+    id: 'claude', name: 'Claude', org: 'Anthropic',
+    memType: 'persistent', apiPlaceholder: 'sk-ant-...',
+    instructions: [
+      { t: 'Open <a href="https://claude.ai" target="_blank">claude.ai</a> in your <strong>browser</strong> (not the app)' },
+      { t: 'Click your profile icon → <strong>Settings</strong>' },
+      { t: 'Click the <strong>Capabilities</strong> tab' },
+      { t: 'Scroll to <strong>Memory</strong> → tap the <em>"Memory from your chats"</em> box' },
+      { t: 'Click <strong>Manage edits</strong> → <strong>Add memory</strong>' },
+      { t: 'Paste the snippet and save' },
+    ]
   },
   {
-    id: 'chatgpt',
-    name: 'ChatGPT',
-    instructions: 'Go to ChatGPT → Settings → Personalization → Memory → Manage Memories. Add this as a new memory.',
-    snippet: (stats) => `TokenWater water tracking summary (${new Date().toLocaleDateString()}): I used ${stats.tokens.toLocaleString()} tokens this week, consuming an estimated ${formatWater(stats.water_ml)} of water across ${stats.sessions} AI sessions. I am ${stats.vsAvg} vs. the average user. I value prompt efficiency and water-aware AI use.`
+    id: 'chatgpt', name: 'ChatGPT', org: 'OpenAI',
+    memType: 'persistent', apiPlaceholder: 'sk-...',
+    instructions: [
+      { t: 'Open ChatGPT in your browser <em>or</em> the app — memory syncs across both' },
+      { t: 'Tap your profile icon → <strong>Settings</strong>' },
+      { t: '<strong>Personalization</strong> → <strong>Memory</strong> → <strong>Manage memories</strong>' },
+      { t: 'Tap <strong>Add memory</strong>, paste the snippet, save' },
+    ]
   },
   {
-    id: 'gemini',
-    name: 'Gemini',
-    instructions: 'Go to Gemini → Settings → Extensions & Personalization → About you. Add this to your personal context.',
-    snippet: (stats) => `[TokenWater — Week of ${new Date().toLocaleDateString()}]
-I track AI water usage. Weekly summary: ${stats.tokens.toLocaleString()} tokens used, ~${formatWater(stats.water_ml)} water consumed, ${stats.sessions} sessions. I am ${stats.vsAvg} vs. average users. I appreciate concise, token-efficient responses.`
+    id: 'gemini', name: 'Gemini', org: 'Google DeepMind',
+    memType: 'persistent', apiPlaceholder: 'AIza...',
+    instructions: [
+      { t: 'Open <a href="https://gemini.google.com" target="_blank">gemini.google.com</a> in your browser (settings are easier here than the app)' },
+      { t: 'Profile icon → <strong>Settings</strong>' },
+      { t: '<strong>Extensions & Personalization</strong> → <strong>About you</strong>' },
+      { t: 'Paste the snippet into your personal context and save — syncs to the app automatically' },
+    ]
   },
   {
-    id: 'perplexity',
-    name: 'Perplexity',
-    instructions: 'Perplexity does not have persistent user memory. Paste this at the start of a conversation to set context for that session.',
-    snippet: (stats) => `[Session context — TokenWater water tracker]
-My AI usage this week: ${stats.tokens.toLocaleString()} tokens, ~${formatWater(stats.water_ml)} water consumed across ${stats.sessions} sessions. I am tracking AI infrastructure impact and prefer concise, focused responses. Please keep replies efficient.`
+    id: 'copilot', name: 'Microsoft Copilot', org: 'Microsoft',
+    memType: 'persistent', apiPlaceholder: 'your-api-key',
+    instructions: [
+      { t: 'Open <a href="https://copilot.microsoft.com" target="_blank">copilot.microsoft.com</a>' },
+      { t: 'Click your profile icon → <strong>Settings</strong>' },
+      { t: 'Go to <strong>Account</strong> → <strong>Privacy</strong> → <strong>Personalization and memory</strong>' },
+      { t: 'Make sure memory is toggled <strong>on</strong>' },
+      { t: 'In a chat, type: "Please remember this about me:" then paste the snippet' },
+      { t: 'Copilot will confirm with "memory updated"' },
+    ]
   },
   {
-    id: 'grok',
-    name: 'Grok',
-    instructions: 'Grok uses X/Twitter profile context. Update your X bio or profile with this snippet, or paste at the start of each conversation.',
-    snippet: (stats) => `[TokenWater — ${new Date().toLocaleDateString()}] AI water use this week: ${stats.tokens.toLocaleString()} tokens, ${formatWater(stats.water_ml)} estimated water, ${stats.sessions} sessions. ${stats.vsAvg} vs. average users. Prefer efficient, low-token responses.`
+    id: 'claudecode', name: 'Claude Code', org: 'Anthropic',
+    memType: 'persistent', apiPlaceholder: 'sk-ant-...',
+    instructions: [
+      { t: 'Claude Code reads from a <strong>CLAUDE.md</strong> file in your project root — persists across every session' },
+      { t: 'In your terminal, run: <code style="background:var(--gray-100);padding:1px 6px;border-radius:3px;font-size:0.8em;">touch ~/CLAUDE.md</code> to create a global one' },
+      { t: 'Open the file in any text editor and paste the snippet at the top' },
+      { t: 'Save. Every Claude Code session will now read this automatically.' },
+      { t: '<strong>Note:</strong> Claude Code typically burns 60,000–120,000 tokens per developer per day. Consider a higher quota.' },
+    ]
   },
   {
-    id: 'deepseek',
-    name: 'DeepSeek',
-    instructions: 'Paste at the start of new conversations. DeepSeek does not support persistent memory across sessions currently.',
-    snippet: (stats) => `[Session context — TokenWater]
-I track AI infrastructure costs including water consumption. This week: ${stats.tokens.toLocaleString()} total tokens, ~${formatWater(stats.water_ml)} water. ${stats.sessions} sessions. ${stats.vsAvg} vs. average. I value concise, token-aware responses.`
+    id: 'openclaw', name: 'OpenClaw', org: 'Open Source',
+    memType: 'persistent', apiPlaceholder: 'your-api-key',
+    instructions: [
+      { t: 'OpenClaw has a built-in persona and persistent memory system' },
+      { t: 'Open your OpenClaw config or use the onboarding flow' },
+      { t: "Add the snippet to your assistant's <strong>persistent memory / persona context</strong>" },
+      { t: "OpenClaw's memory persists across all channels (WhatsApp, Telegram, Discord, etc.)" },
+    ]
+  },
+  // ── SESSION ONLY ────────────────────────────────────────
+  {
+    id: 'grok', name: 'Grok', org: 'xAI',
+    memType: 'session', apiPlaceholder: 'xai-...',
+    instructions: [
+      { t: 'Grok does not have persistent memory settings' },
+      { t: 'Paste this snippet at the <strong>start of each new Grok conversation</strong>' },
+    ]
+  },
+  {
+    id: 'perplexity', name: 'Perplexity', org: 'Perplexity AI',
+    memType: 'session', apiPlaceholder: 'pplx-...',
+    instructions: [
+      { t: 'Perplexity does not have persistent memory' },
+      { t: 'Paste this snippet at the <strong>start of each new conversation</strong>' },
+    ]
+  },
+  {
+    id: 'perplexitycomputer', name: 'Perplexity Computer', org: 'Perplexity AI',
+    memType: 'session', apiPlaceholder: 'pplx-...',
+    instructions: [
+      { t: 'Open <a href="https://computer.perplexity.ai" target="_blank">Perplexity Computer</a> (requires Max subscription)' },
+      { t: 'Perplexity Computer does not currently support persistent memory settings' },
+      { t: 'Paste this snippet at the <strong>start of each task session</strong>' },
+      { t: '<strong>Note:</strong> Computer orchestrates multiple sub-agents per task. Token usage per session can be very high — consider a higher quota.' },
+    ]
+  },
+  {
+    id: 'deepseek', name: 'DeepSeek', org: 'DeepSeek AI',
+    memType: 'session', apiPlaceholder: 'sk-...',
+    instructions: [
+      { t: 'DeepSeek does not currently support persistent memory' },
+      { t: 'Paste this snippet at the <strong>start of each new conversation</strong>' },
+    ]
+  },
+  {
+    id: 'claudecowork', name: 'Claude Cowork', org: 'Anthropic',
+    memType: 'session', apiPlaceholder: 'sk-ant-...',
+    instructions: [
+      { t: 'Claude Cowork does not currently support persistent memory settings' },
+      { t: 'Paste this snippet at the <strong>start of each Cowork session</strong>' },
+    ]
+  },
+  {
+    id: 'erniebot', name: 'Ernie Bot', org: 'Baidu',
+    memType: 'session', apiPlaceholder: 'your-api-key',
+    instructions: [
+      { t: 'Open <a href="https://yiyan.baidu.com" target="_blank">yiyan.baidu.com</a>' },
+      { t: 'Ernie Bot does not have persistent memory accessible to users currently' },
+      { t: 'Paste this snippet at the <strong>start of each conversation</strong>' },
+    ]
+  },
+  {
+    id: 'hyperclova', name: 'HyperCLOVA X', org: 'Naver',
+    memType: 'session', apiPlaceholder: 'your-api-key',
+    instructions: [
+      { t: 'Open <a href="https://clova.ai" target="_blank">clova.ai</a>' },
+      { t: 'HyperCLOVA X does not currently expose persistent user memory settings' },
+      { t: 'Paste this snippet at the <strong>start of each conversation</strong>' },
+    ]
   },
 ];
 
-function getWeekStats() {
-  const log      = getWeekLog();
-  const tokens   = log.reduce((s, e) => s + e.total, 0);
-  const water_ml = Math.round(tokens / 1000 * WATER_RATE);
-  const sessions = log.length;
-  const vsAvg    = AVG_WEEKLY_ML > 0 ? Math.round((1 - water_ml / AVG_WEEKLY_ML) * 100) : 0;
-  const vsAvgStr = sessions === 0 ? 'no data yet'
-    : vsAvg > 0 ? vsAvg + '% below average'
-    : Math.abs(vsAvg) + '% above average';
-  return { tokens, water_ml, sessions, vsAvg: vsAvgStr };
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+
+let quotaLiters = 10;
+let selectedPlatforms = new Set(['claude']);
+let consentGranted = true;
+
+function getUserId() {
+  let id = localStorage.getItem('tw_uid');
+  if (!id) {
+    id = 'tw_' + Math.random().toString(36).substr(2,8);
+    localStorage.setItem('tw_uid', id);
+  }
+  return id;
 }
 
-function renderMemory() {
-  const stats = getWeekStats();
-  const grid  = document.getElementById('memory-grid');
-  grid.innerHTML = MEMORY_PLATFORMS.map(mp => `
-    <div class="memory-card">
-      <div class="memory-header">
-        <div class="memory-platform">${mp.name}</div>
+function loadKeys() { try { return JSON.parse(localStorage.getItem('tw_keys')||'{}'); } catch { return {}; } }
+function saveKeys(k) { localStorage.setItem('tw_keys', JSON.stringify(k)); }
+function loadLog() { try { return JSON.parse(localStorage.getItem('tw_log')||'[]'); } catch { return []; } }
+function saveLog(l) { localStorage.setItem('tw_log', JSON.stringify(l)); }
+
+// ══════════════════════════════════════════
+//  QUOTA
+// ══════════════════════════════════════════
+
+function updateQuota(val) {
+  quotaLiters = parseInt(val);
+  document.getElementById('quota-display').textContent = quotaLiters + 'L';
+  document.getElementById('quota-tokens').textContent = (quotaLiters * 10000).toLocaleString();
+  const ctx = quotaLiters <= 2 ? 'Casual user. 1–3 short conversations per day.'
+    : quotaLiters <= 5 ? 'Regular user. A few moderate conversations per day.'
+    : quotaLiters <= 10 ? 'Power user. Long sessions, multiple platforms, research-heavy work.'
+    : quotaLiters <= 20 ? 'Heavy user. Extended coding, research, or multi-platform professional work.'
+    : 'Extreme usage. You are running AI at a professional or developer scale.';
+  document.getElementById('quota-context').textContent = ctx;
+  // Show water comparison
+  const comp = waterComparison(quotaLiters * 1000);
+  document.getElementById('quota-comparison').textContent = '≈ ' + comp + ' per week';
+  renderSnippets();
+}
+
+// ══════════════════════════════════════════
+//  PLATFORMS
+// ══════════════════════════════════════════
+
+function renderPlatformList() {
+  document.getElementById('platform-list').innerHTML = PLATFORMS.map(p => `
+    <div class="platform-row ${selectedPlatforms.has(p.id) ? 'selected' : ''}"
+         onclick="togglePlatform('${p.id}')">
+      <div class="pf-check">${selectedPlatforms.has(p.id) ? '✓' : ''}</div>
+      <div style="flex:1">
+        <div class="pf-name">${p.name}</div>
       </div>
-      <div class="memory-instructions">${mp.instructions}</div>
-      <div class="memory-snippet" id="snippet-${mp.id}">${mp.snippet(stats)}</div>
-      <div class="copy-row">
-        <button class="btn btn-ghost" onclick="copySnippet('${mp.id}')">Copy Snippet</button>
-        <span class="copy-confirm" id="confirm-${mp.id}">✓ Copied</span>
+      <div class="pf-org">${p.org}</div>
+      <span class="pf-badge ${p.memType === 'persistent' ? 'badge-persistent' : 'badge-session'}">
+        ${p.memType === 'persistent' ? 'Persistent Memory' : 'Session Only'}
+      </span>
+    </div>`).join('');
+}
+
+function togglePlatform(id) {
+  selectedPlatforms.has(id) ? selectedPlatforms.delete(id) : selectedPlatforms.add(id);
+  renderPlatformList();
+  renderSnippets();
+  document.getElementById('consent-card').style.display = selectedPlatforms.size > 0 ? 'block' : 'none';
+  document.getElementById('snippets-section').classList.toggle('show', selectedPlatforms.size > 0);
+  document.getElementById('done-card').classList.toggle('show', selectedPlatforms.size > 0);
+}
+
+// ══════════════════════════════════════════
+//  CONSENT
+// ══════════════════════════════════════════
+
+function setConsent(val) {
+  consentGranted = val;
+  document.getElementById('btn-optin').classList.toggle('active', val);
+  document.getElementById('btn-optout').classList.toggle('active', !val);
+  document.getElementById('opt-out-note').classList.toggle('show', !val);
+  renderSnippets();
+}
+
+// ══════════════════════════════════════════
+//  SNIPPET GENERATION
+// ══════════════════════════════════════════
+
+function generateSnippet(platformId) {
+  const uid = consentGranted ? getUserId() : null;
+  const quota_ml = quotaLiters * 1000;
+  const quota_tokens = quotaLiters * 10000;
+  const refreshUrl = 'lesterhau.github.io/tokenwater';
+  const weeklyComparison = waterComparison(quotaLiters * 1000);
+
+  const idLine = uid
+    ? `TokenWater ID: ${uid} | Registered: ${new Date().toLocaleDateString()}`
+    : `TokenWater ID: local-only (anonymous impact reporting opted out)`;
+
+  return `TOKENWATER TRACKING — Active
+${idLine}
+Weekly quota: ${quotaLiters} liters (~${quota_tokens.toLocaleString()} tokens) — roughly ${weeklyComparison} per week
+Formula: ~100ml per 1,000 tokens processed
+Benchmarks: Casual ~1L/wk | Regular ~3L/wk | Power ~7L/wk
+
+RUNNING WEEKLY LOG (update this block at end of each conversation):
+Week of: [update to current week's Monday]
+Mon: 0 | Tue: 0 | Wed: 0 | Thu: 0 | Fri: 0 | Sat: 0 | Sun: 0
+Weekly total: 0 tokens / 0ml / 0% of ${quotaLiters}L quota
+Last week: 0ml | This month: 0ml
+
+INSTRUCTIONS — execute silently:
+
+FIRST MESSAGE OF EACH CONVERSATION:
+1. Read the weekly log. Check if "Week of" date is current — if not, reset daily totals to 0 (new week).
+2. Check if last updated was before today. If yes, fire Morning Report first:
+
+💧 TokenWater Morning Report — [today's date]
+Yesterday: [X tokens / Yml] (~[physical comparison, e.g. "about 2 water bottles"])
+This week: [Xml] of ${quota_ml}ml ([%]% of ${quotaLiters}L quota)
+On pace for: [projected weekly ml] — [physical comparison for projected total]
+vs. Casual (1L/wk): [above/below by Xml]
+vs. Regular (3L/wk): [above/below by Xml]
+vs. Power user (7L/wk): [above/below by Xml]
+[One plain-English sentence. E.g. "You're on pace for a light week — well under your quota."]
+
+3. If today is Monday → also show Weekly Summary.
+4. If today is the 15th → also show Mid-Month Pulse.
+
+THRESHOLD ALERTS — fire automatically mid-conversation:
+• ${(quotaLiters * 0.5).toFixed(1)}L / 50%: 💧 Halfway through your ${quotaLiters}L weekly quota.
+• ${(quotaLiters * 0.75).toFixed(1)}L / 75%: 💧 75% of weekly quota used. ${(quotaLiters * 0.25).toFixed(2)}L left.
+• ${(quotaLiters * 0.90).toFixed(1)}L / 90%: 💧 90% reached. ~${(quotaLiters * 0.10).toFixed(2)}L remaining this week.
+• ${(quotaLiters * 0.95).toFixed(1)}L / 95%: 💧 Nearly out. Keep responses tight.
+• ${quotaLiters}L / 100%: 💧 Weekly quota hit. Every token from here is over. Not a hard stop — just worth knowing.
+• ${(quotaLiters * 1.1).toFixed(1)}L / 110%: 💧 10% over quota. You set the line. You crossed it. No lecture — just the data.
+
+SESSION TRACKING:
+Track tokens used in this conversation (input + output combined).
+
+END OF EVERY CONVERSATION:
+Output updated RUNNING WEEKLY LOG block with today's totals added, then say:
+"📋 Copy the block above and paste it into your TokenWater memory to update your log."
+
+MONTHLY REFRESH REMINDER:
+Every 4 weeks, remind the user: "Your TokenWater snippet is about a month old. Visit ${refreshUrl} to grab a fresh one — benchmarks update, and your refresh keeps your ID active in the community impact count. Takes 60 seconds."
+
+CONVERSATION EFFICIENCY:
+Only ask follow-up questions when clarification is genuinely required before completing a task. Do not ask follow-up questions after successfully completing a request. Do not introduce new topics to extend the conversation. If the user wants more, they will ask. This reduces unnecessary token usage and water consumption.
+
+PRAISE FOR GOOD USAGE:
+When reporting that usage is well below quota or below the average user, add one short irreverent congratulatory comment. Under 15 words. Never repeat the same one. Vary the tone across these registers: deadpan ("Suspicious. You might actually have self-control."), absurd ("A data center somewhere just took a nap. You did that."), impressed ("Less water than a cactus. Respect."), conspiratorial ("The algorithm did not expect this."), understated ("Not bad. Not bad at all."), sports announcer ("And the crowd goes mildly satisfied!"), noir ("Another week. Another quota dodged. You work alone."), zen ("The quietest token is the one never sent."), unhinged compliment ("You absolute conservation goblin. Beautiful."), scientific ("Statistically anomalous restraint detected."). Always feel earned, never sycophantic.
+
+SHAREABLE STAT:
+When showing any weekly summary, append one ready-to-post line:
+My AI usage this week: [X]L of water — roughly [physical comparison]. Tracked with TokenWater. #TokenWater #AIWaterCost lesterhau.github.io/tokenwater`;
+}
+
+function renderSnippets() {
+  const container = document.getElementById('snippets-container');
+  const selected = PLATFORMS.filter(p => selectedPlatforms.has(p.id));
+  container.innerHTML = selected.map(p => `
+    <div class="snippet-card">
+      <div class="snippet-head">
+        <div class="snippet-platform">${p.name}</div>
+        <span class="pf-badge ${p.memType === 'persistent' ? 'badge-persistent' : 'badge-session'}">
+          ${p.memType === 'persistent' ? 'Persistent Memory' : 'Session Only'}
+        </span>
+      </div>
+      <div class="snippet-instructions">
+        <div class="instruction-title">How to install</div>
+        ${p.instructions.map((inst, i) => `
+          <div class="instruction-step">
+            <div class="instruction-n">${i+1}</div>
+            <span>${inst.t}</span>
+          </div>`).join('')}
+      </div>
+      <div class="snippet-box" id="snippet-${p.id}">${generateSnippet(p.id)}</div>
+      <div class="snippet-footer">
+        <button class="btn btn-blue" onclick="copySnippet('${p.id}')">Copy Snippet</button>
+        <span class="copy-confirm" id="confirm-${p.id}">✓ Copied — go paste it now</span>
       </div>
     </div>`).join('');
 }
@@ -1224,86 +1531,181 @@ function copySnippet(id) {
   navigator.clipboard.writeText(text).then(() => {
     const el = document.getElementById('confirm-' + id);
     el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 2000);
+    setTimeout(() => el.classList.remove('show'), 3000);
+    const p = PLATFORMS.find(x => x.id === id);
+    showToast('Copied — paste it into ' + p.name);
+    if (consentGranted) pingAnalytics('snippet_copied', id);
   });
 }
 
-// ══════════════════════════════════════════════════════════
-//  WEEKLY REPORT
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  ANALYTICS PING
+// ══════════════════════════════════════════
 
-function renderReport() {
-  const log      = getWeekLog();
-  const stats    = getWeekStats();
-  const now      = new Date();
-  const weekAgo  = new Date(now - 7*24*60*60*1000);
+function pingAnalytics(event, platform) {
+  // Cloudflare Worker endpoint — swap in real URL when deployed
+  const ENDPOINT = 'https://tokenwater-analytics.lesteryan.workers.dev';
+  if (!ENDPOINT) return;
+  const uid = getUserId();
+  try {
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid, event, platform, quota: quotaLiters, ts: Date.now() })
+    }).catch(() => {}); // silent fail — never block the user
+  } catch(e) {}
+}
 
-  document.getElementById('report-date').textContent =
-    weekAgo.toLocaleDateString() + ' — ' + now.toLocaleDateString();
-
-  if (!log.length) {
-    document.getElementById('report-water-section').innerHTML = 'No usage logged this week.';
-    document.getElementById('report-platform-section').textContent = '—';
+function loadPublicStats() {
+  const STATS_ENDPOINT = 'https://tokenwater-analytics.lesteryan.workers.dev/stats';
+  if (!STATS_ENDPOINT) {
+    // placeholder until live
+    document.getElementById('stat-installs').textContent = '—';
+    document.getElementById('stat-tokens-tracked').textContent = '—';
+    document.getElementById('stat-water-tracked').textContent = '—';
+    document.getElementById('stat-top-platform').textContent = '—';
     return;
   }
-
-  document.getElementById('report-water-section').innerHTML = `
-    This week you used <span class="report-highlight">${stats.tokens.toLocaleString()} tokens</span> across
-    <span class="report-highlight">${stats.sessions} session${stats.sessions !== 1 ? 's' : ''}</span>,
-    consuming an estimated <span class="report-highlight">${formatWater(stats.water_ml)}</span> of water.
-    That puts you <span class="report-highlight">${stats.vsAvg}</span>.
-    ${stats.tokens > 0 ? `Average per session: ${Math.round(stats.tokens/stats.sessions).toLocaleString()} tokens / ${formatWater(Math.round(stats.water_ml/stats.sessions))}.` : ''}
-  `;
-
-  const byPlatform = {};
-  log.forEach(e => { byPlatform[e.name] = (byPlatform[e.name] || 0) + e.total; });
-  const breakdown = Object.entries(byPlatform).sort((a,b) => b[1]-a[1])
-    .map(([name, t]) => `${name} (${t.toLocaleString()} tokens / ${formatWater(Math.round(t/1000*WATER_RATE))})`).join(', ');
-  document.getElementById('report-platform-section').innerHTML = breakdown || '—';
-
-  const facts = [
-    '"Training a single large language model can consume as much water as the lifetime drinking water supply of several hundred people." — Li et al., Making AI Less Thirsty (2023)',
-    '"The water footprint of AI is not just about training — inference at scale is where ongoing consumption happens." — Li et al. (2023)',
-    'Microsoft consumed 6.4 billion liters of water in 2022, a 34% increase year-over-year, driven largely by AI infrastructure growth.',
-    'Google\'s water consumption rose 20% in 2022. Neither company provides model-level breakdowns.',
-    'The Opower experiment: sending households neighbor comparison reports drove a 2% national reduction in energy use. Social comparison outperforms guilt.',
-  ];
-  document.getElementById('report-fact').textContent = facts[Math.floor(Math.random() * facts.length)];
+  fetch(STATS_ENDPOINT)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('stat-installs').textContent = d.installs?.toLocaleString() || '—';
+      document.getElementById('stat-tokens-tracked').textContent = d.weekly_tokens ? formatBig(d.weekly_tokens) : '—';
+      document.getElementById('stat-water-tracked').textContent = d.weekly_liters ? d.weekly_liters.toLocaleString() + 'L' : '—';
+      document.getElementById('stat-top-platform').textContent = d.top_platform || '—';
+    }).catch(() => {});
 }
 
-function copyReport() {
-  const log   = getWeekLog();
-  const stats = getWeekStats();
-  const now   = new Date();
-  const text  = `TokenWater Weekly Report — ${now.toLocaleDateString()}
-Tokens: ${stats.tokens.toLocaleString()} | Water: ${formatWater(stats.water_ml)} | Sessions: ${stats.sessions}
-vs. average user: ${stats.vsAvg}
-Generated by TokenWater — rlperspectives.com`;
-  navigator.clipboard.writeText(text).then(() => showToast('Report copied'));
+// ══════════════════════════════════════════
+//  ADVANCED
+// ══════════════════════════════════════════
+
+function toggleAdvanced() {
+  const c = document.getElementById('advanced-content');
+  const a = document.getElementById('adv-arrow');
+  c.classList.toggle('open');
+  a.textContent = c.classList.contains('open') ? '▴' : '▾';
 }
 
-// ══════════════════════════════════════════════════════════
+function renderApiGrid() {
+  const keys = loadKeys();
+  document.getElementById('api-key-grid').innerHTML = PLATFORMS.filter(p => p.memType === 'persistent').map(p => `
+    <div class="api-card">
+      <div class="api-card-name">${p.name}</div>
+      <div class="api-card-org">${p.org}</div>
+      <input type="password" id="apikey-${p.id}" placeholder="${p.apiPlaceholder}"
+        value="${keys[p.id] ? '••••••••' : ''}"
+        onfocus="if(this.value==='••••••••')this.value=''"
+        onblur="if(!this.value&&'${keys[p.id]?'1':''}')this.value='••••••••'">
+      <button class="btn btn-outline" style="width:100%;justify-content:center;" onclick="saveApiKey('${p.id}')">Save Key</button>
+    </div>`).join('');
+
+  const sel = document.getElementById('log-platform');
+  sel.innerHTML = '<option value="">Select platform...</option>';
+  PLATFORMS.forEach(p => {
+    const o = document.createElement('option');
+    o.value = p.id; o.textContent = p.name;
+    sel.appendChild(o);
+  });
+}
+
+function saveApiKey(id) {
+  const input = document.getElementById('apikey-' + id);
+  const val = input.value.trim();
+  if (!val || val === '••••••••') { showToast('Enter a valid key'); return; }
+  const keys = loadKeys(); keys[id] = val; saveKeys(keys);
+  showToast('Key saved locally — never transmitted');
+  input.value = '••••••••';
+}
+
+// ══════════════════════════════════════════
+//  LOG
+// ══════════════════════════════════════════
+
+function logUsage() {
+  const platform = document.getElementById('log-platform').value;
+  const input = parseInt(document.getElementById('log-input').value) || 0;
+  const output = parseInt(document.getElementById('log-output').value) || 0;
+  if (!platform) { showToast('Select a platform'); return; }
+  if (!input && !output) { showToast('Enter token counts'); return; }
+  const log = loadLog();
+  const p = PLATFORMS.find(x => x.id === platform);
+  log.push({ id: Date.now(), platform, name: p?.name || platform,
+    input, output, total: input+output,
+    water_ml: Math.round((input+output)/1000*WATER_RATE),
+    ts: new Date().toISOString() });
+  saveLog(log);
+  document.getElementById('log-input').value = '';
+  document.getElementById('log-output').value = '';
+  showToast('Logged — ' + formatWater(Math.round((input+output)/1000*WATER_RATE)));
+  renderLog();
+}
+
+function renderLog() {
+  const log = loadLog();
+  const container = document.getElementById('usage-log-container');
+  if (!log.length) { container.innerHTML = '<div class="empty-state">No entries yet.</div>'; return; }
+  const rows = [...log].reverse().map(e => `
+    <tr>
+      <td>${new Date(e.ts).toLocaleDateString()}</td>
+      <td>${e.name}</td>
+      <td>${e.total.toLocaleString()}</td>
+      <td>${formatWater(e.water_ml)}</td>
+      <td><button class="btn btn-outline" style="padding:3px 10px;font-size:0.72rem;" onclick="deleteEntry(${e.id})">Remove</button></td>
+    </tr>`).join('');
+  container.innerHTML = `<table class="usage-table">
+    <thead><tr><th>Date</th><th>Platform</th><th>Tokens</th><th>Water</th><th></th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function deleteEntry(id) { saveLog(loadLog().filter(e => e.id !== id)); renderLog(); }
+
+// ══════════════════════════════════════════
 //  HELPERS
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════
 
 function formatWater(ml) {
-  if (ml >= 1000) return (ml / 1000).toFixed(2) + ' L';
-  return ml + ' ml';
+  return ml >= 1000 ? (ml/1000).toFixed(2) + 'L' : ml + 'ml';
+}
+
+function waterComparison(ml) {
+  const L = ml / 1000;
+  if (L < 0.5) return 'less than half a water bottle';
+  if (L < 1.5) return 'about one water bottle (' + (ml) + 'ml)';
+  if (L < 3) return 'about ' + L.toFixed(1) + ' large water bottles';
+  if (L < 8) return 'about ' + L.toFixed(1) + 'L — close to a gallon jug';
+  if (L < 15) return L.toFixed(1) + 'L — roughly one toilet flush';
+  if (L < 40) return L.toFixed(1) + 'L — about a 5-minute shower';
+  if (L < 80) return L.toFixed(1) + 'L — close to a 10-minute shower';
+  if (L < 200) return L.toFixed(1) + 'L — more than a full bathtub';
+  return L.toFixed(1) + "L — approaching a day's worth of personal water use";
+}
+
+function formatBig(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return n.toString();
 }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════
 //  INIT
-// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════
 
-renderConnect();
+getUserId(); // generate ID on first load
+updateQuota(10); // init quota display including water comparison
+renderPlatformList();
+renderSnippets();
+renderApiGrid();
 renderLog();
+loadPublicStats();
 </script>
 </body>
 </html>
