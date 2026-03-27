@@ -1232,9 +1232,10 @@ const PLATFORMS = [
     memType: 'persistent', apiPlaceholder: 'sk-...',
     instructions: [
       { t: 'Open ChatGPT in your browser or the app — memory syncs across both' },
-      { t: 'Start a new conversation' },
-      { t: 'Paste the snippet into the chat and hit send — ChatGPT will confirm it saved the memory' },
-      { t: '<strong>Verify:</strong> Settings → Personalization → Manage memories — you should see it listed there' },
+      { t: 'Start a new conversation and type: <strong>"Please save the following to your long-term memory exactly as written:"</strong>' },
+      { t: 'Then paste the snippet and hit send' },
+      { t: 'ChatGPT will confirm: "I\'ve saved this to my memory." If it just reads it back without confirming, say "Please save that to your memory" explicitly' },
+      { t: '<strong>Verify:</strong> Settings → Personalization → Manage memories — you should see TokenWater entries listed' },
     ]
   },
   {
