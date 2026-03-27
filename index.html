@@ -1084,7 +1084,7 @@
       </p>
       <div class="consent-options">
         <button class="consent-btn consent-btn-in active" id="btn-optin" onclick="setConsent(true)">
-          ✓ Count me in — I want to be part of this
+          <span id="btn-optin-text">✓ Count me in — I want to be part of this</span>
         </button>
         <button class="consent-btn consent-btn-out" id="btn-optout" onclick="setConsent(false)">
           Track me locally only
@@ -1232,8 +1232,8 @@ const PLATFORMS = [
     memType: 'persistent', apiPlaceholder: 'sk-...',
     instructions: [
       { t: 'Open ChatGPT in your browser or the app — memory syncs across both' },
-      { t: 'Start a new conversation and type: <strong>"Please save the following to your long-term memory exactly as written:"</strong>' },
-      { t: 'Then paste the snippet and hit send' },
+      { t: 'Start a new conversation' },
+      { t: 'Paste the snippet and hit send — the opening line tells ChatGPT to save it to memory' },
       { t: 'ChatGPT will confirm: "I\'ve saved this to my memory." If it just reads it back without confirming, say "Please save that to your memory" explicitly' },
       { t: '<strong>Verify:</strong> Settings → Personalization → Manage memories — you should see TokenWater entries listed' },
     ]
@@ -1423,6 +1423,10 @@ function setConsent(val) {
   document.getElementById('btn-optin').classList.toggle('active', val);
   document.getElementById('btn-optout').classList.toggle('active', !val);
   document.getElementById('opt-out-note').classList.toggle('show', !val);
+  const btnText = document.getElementById('btn-optin-text');
+  if (btnText) {
+    btnText.textContent = val ? '✓ Got it — you\'re counted' : '✓ Count me in — I want to be part of this';
+  }
   renderSnippets();
 }
 
@@ -1441,7 +1445,9 @@ function generateSnippet(platformId) {
     ? `TokenWater ID: ${uid} | Registered: ${new Date().toLocaleDateString()}`
     : `TokenWater ID: local-only (anonymous impact reporting opted out)`;
 
-  return `TOKENWATER TRACKING — Active
+  return `Please save the following to your long-term memory exactly as written:
+
+TOKENWATER TRACKING — Active
 ${idLine}
 Weekly quota: ${quotaLiters} liters (~${quota_tokens.toLocaleString()} tokens) — roughly ${weeklyComparison} per week
 Formula: ~100ml per 1,000 tokens processed
