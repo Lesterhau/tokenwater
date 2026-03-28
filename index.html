@@ -1555,7 +1555,7 @@ function pingAnalytics(event, platform) {
   if (!ENDPOINT) return;
   const uid = getUserId();
   try {
-    fetch(ENDPOINT, {
+    fetch(ENDPOINT + '/ping', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ uid, event, platform, quota: quotaLiters, ts: Date.now() })
