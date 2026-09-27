@@ -1029,23 +1029,23 @@
     <p class="step-desc">This is a personal behavior target, not a population benchmark. Where exact token telemetry is unavailable, the estimate should be treated as approximate.</p>
     <div class="quota-card">
       <div class="quota-top">
-        <div class="quota-big" id="quota-display">10L</div>
+        <div class="quota-big" id="quota-display">100mL</div>
         <div class="quota-right">
-          <div class="quota-unit">liters per week</div>
-          <div class="quota-tokens">~<span id="quota-tokens">100,000</span> tokens</div>
+          <div class="quota-unit">mL estimated direct cooling per week</div>
+          <div class="quota-tokens">~<span id="quota-tokens">277,778</span> effective tokens at the midpoint scenario</div>
         </div>
       </div>
-      <input type="range" id="quota-slider" min="1" max="30" value="10" oninput="updateQuota(this.value)">
+      <input type="range" id="quota-slider" min="10" max="500" step="10" value="100" oninput="updateQuota(this.value)">
       <div class="quota-marks">
-        <span>1L</span>
-        <span>3L</span>
-        <span>7L</span>
-        <span>15L</span>
-        <span>30L</span>
+        <span>10mL</span>
+        <span>50mL</span>
+        <span>100mL</span>
+        <span>250mL</span>
+        <span>500mL</span>
       </div>
       <hr class="quota-divider">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--blue-600);margin-bottom:8px;" id="quota-comparison">≈ roughly one toilet flush per week</p>
-      <p class="quota-context" id="quota-context">Power user range. Long sessions, multiple platforms, research-heavy work. A single long research conversation typically uses 1–2L.</p>
+      <p style="font-size:0.78rem;font-weight:600;color:var(--blue-600);margin-bottom:8px;" id="quota-comparison">≈ less than half a water bottle under the midpoint scenario</p>
+      <p class="quota-context" id="quota-context">Personal awareness budget. This is not a population benchmark, and real deployments can fall outside the scenario band.</p>
     </div>
   </div>
 
