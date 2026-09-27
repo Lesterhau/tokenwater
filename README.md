@@ -13,7 +13,7 @@ You use AI every day. You have no idea how much water that costs.
 
 Microsoft used 6.4 billion liters in 2022 — up 34% year-over-year. Google: +20% the same period. The servers running Claude, ChatGPT, Gemini, and Grok consume enormous amounts of water for cooling and electricity generation. That number grows every time you send a message. No one tells you. There's no meter running. There's no bill.
 
-TokenWater is the meter.
+TokenWater is an estimator, not a meter. It makes an invisible infrastructure cost visible while keeping the uncertainty visible too.
 
 ---
 
@@ -21,14 +21,14 @@ TokenWater is the meter.
 
 TokenWater is a setup tool, not a dashboard. You open it once, set your weekly water quota, pick your AI platforms, and copy a memory snippet for each one. Paste the snippet into your AI's memory settings. Close the tab. Done.
 
-From that point on, your AI tracks your water usage automatically — no app running, no tab to keep open, nothing to log.
+From that point on, your AI can maintain a directional usage estimate from conversation context. Exact token counts are only available when the platform exposes usage telemetry; otherwise the estimate must be labeled as approximate.
 
 **You do not need to keep this page open after setup.**
 
 Every morning, your first conversation shows you:
 - Yesterday's water usage (in liters and a physical comparison — "about one toilet flush")
 - Your weekly pace and projection
-- How you compare to casual, regular, and power users
+- How you compare with the personal budget you chose
 - Alerts at 50%, 75%, 90%, 95%, and 100% of your weekly quota
 
 ---
@@ -68,9 +68,9 @@ Every morning, your first conversation shows you:
 
 ## The Water Math
 
-**~100ml of water consumed per 1,000 tokens processed.**
+**There is no universal water-per-token constant.**
 
-Derived from data center power usage effectiveness (PUE) data and cooling water intensity ratios for major US cloud providers. Directional estimate — actual consumption varies by provider, region, season, and model architecture.
+Modern measurements show large variation by model, hardware, serving configuration, query type, cooling system, climate, and electricity source. TokenWater is moving to a versioned low/mid/high scenario methodology rather than presenting one fixed coefficient as measured reality. See [METHODOLOGY.md](METHODOLOGY.md).
 
 **Sources:**
 - Li, P. et al. (2023). "Making AI Less Thirsty." UC Riverside. https://arxiv.org/abs/2304.03271
@@ -78,7 +78,7 @@ Derived from data center power usage effectiveness (PUE) data and cooling water 
 - Microsoft 2022 Environmental Sustainability Report
 - Google 2022 Environmental Report
 
-If the math is wrong, open an issue and cite your source.
+If the methodology is wrong, open an issue and cite your source.
 
 ---
 
