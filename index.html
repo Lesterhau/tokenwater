@@ -1037,10 +1037,10 @@
       </div>
       <input type="range" id="quota-slider" min="1" max="30" value="10" oninput="updateQuota(this.value)">
       <div class="quota-marks">
-        <span>1L casual</span>
-        <span>3L regular</span>
-        <span>7L power</span>
-        <span>15L heavy</span>
+        <span>1L</span>
+        <span>3L</span>
+        <span>7L</span>
+        <span>15L</span>
         <span>30L</span>
       </div>
       <hr class="quota-divider">
@@ -1161,11 +1161,11 @@
       </div>
 
       <div class="advanced-section">
-        <div class="advanced-section-title">The Water Math</div>
+        <div class="advanced-section-title">The Water Math — uncertainty-first</div>
         <div class="about-cards">
           <div class="about-card">
             <div class="about-card-title">The Proxy Metric</div>
-            <div class="about-card-body">~100ml of water consumed per 1,000 tokens processed. Derived from data center PUE data and cooling water intensity ratios. Directional estimate — actual consumption varies by provider, region, and model.</div>
+            <div class="about-card-body">There is no universal water-per-token constant. Manual logs use low/mid/high direct-cooling scenarios based on modern inference-energy measurements and published water-efficiency assumptions. See METHODOLOGY.md for scope and limitations.</div>
           </div>
           <div class="about-card">
             <div class="about-card-title">Sources</div>
@@ -1176,7 +1176,7 @@
           </div>
           <div class="about-card">
             <div class="about-card-title">The Real Numbers</div>
-            <div class="about-card-body">Microsoft: 6.4 billion liters in 2022 (+34% YoY). Google: +20% same period. Neither provides per-user breakdowns. TokenWater is the individual meter that doesn't otherwise exist.</div>
+            <div class="about-card-body">Public evidence supports a significant aggregate AI water footprint, but per-user attribution remains uncertain. TokenWater is an estimator designed to expose assumptions rather than claim direct measurement.</div>
           </div>
           <div class="about-card">
             <div class="about-card-title">Built By</div>
@@ -1211,7 +1211,8 @@
 //  CONFIG
 // ══════════════════════════════════════════
 
-const WATER_RATE = 100; // ml per 1000 tokens
+const WATER_RATES = Object.freeze({ low: 0.036, mid: 0.36, high: 0.79 });
+const INPUT_TOKEN_WEIGHT = 0.20;
 
 const PLATFORMS = [
   // ── PERSISTENT MEMORY ──────────────────────────────────
@@ -1373,12 +1374,8 @@ function saveLog(l) { localStorage.setItem('tw_log', JSON.stringify(l)); }
 function updateQuota(val) {
   quotaLiters = parseInt(val);
   document.getElementById('quota-display').textContent = quotaLiters + 'L';
-  document.getElementById('quota-tokens').textContent = (quotaLiters * 10000).toLocaleString();
-  const ctx = quotaLiters <= 2 ? 'Casual user. 1–3 short conversations per day.'
-    : quotaLiters <= 5 ? 'Regular user. A few moderate conversations per day.'
-    : quotaLiters <= 10 ? 'Power user. Long sessions, multiple platforms, research-heavy work.'
-    : quotaLiters <= 20 ? 'Heavy user. Extended coding, research, or multi-platform professional work.'
-    : 'Extreme usage. You are running AI at a professional or developer scale.';
+  document.getElementById('quota-tokens').textContent = Math.round((quotaLiters * 1000 / WATER_RATES.mid) * 1000).toLocaleString();
+  const ctx = 'Personal awareness budget. This is not a population benchmark; adjust it to your own goal.';
   document.getElementById('quota-context').textContent = ctx;
   // Show water comparison
   const comp = waterComparison(quotaLiters * 1000);
@@ -1437,7 +1434,7 @@ function setConsent(val) {
 function generateSnippet(platformId) {
   const uid = consentGranted ? getUserId() : null;
   const quota_ml = quotaLiters * 1000;
-  const quota_tokens = quotaLiters * 10000;
+  const quota_tokens = Math.round((quotaLiters * 1000 / WATER_RATES.mid) * 1000);
   const refreshUrl = 'lesterhau.github.io/tokenwater';
   const weeklyComparison = waterComparison(quotaLiters * 1000);
 
