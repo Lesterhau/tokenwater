@@ -1445,7 +1445,7 @@ function generateSnippet(platformId) {
 
 TOKENWATER TRACKING — Active
 ${idLine}
-Weekly quota: ${quotaLiters} liters (~${quota_tokens.toLocaleString()} tokens) — roughly ${weeklyComparison} per week
+Weekly personal budget: ${quotaMl}ml (~${quota_tokens.toLocaleString()} effective tokens at the midpoint scenario) — roughly ${weeklyComparison}
 Methodology: directional estimate, not measured water use.
 If exact token telemetry exists, use it. Otherwise label token counts as estimated.
 Effective tokens = output + (0.20 × fresh input).
@@ -1455,7 +1455,7 @@ Do not compare the user with invented population benchmarks.
 RUNNING WEEKLY LOG (update this block at end of each conversation):
 Week of: [update to current week's Monday]
 Mon: 0 | Tue: 0 | Wed: 0 | Thu: 0 | Fri: 0 | Sat: 0 | Sun: 0
-Weekly total: 0 tokens / 0ml / 0% of ${quotaLiters}L quota
+Weekly total: 0 tokens / estimated 0ml / 0% of ${quotaMl}ml personal budget
 Last week: 0ml | This month: 0ml
 
 INSTRUCTIONS — execute silently:
@@ -1466,7 +1466,7 @@ FIRST MESSAGE OF EACH CONVERSATION:
 
 💧 TokenWater Morning Report — [today's date]
 Yesterday: [X tokens / Yml] (~[physical comparison, e.g. "about 2 water bottles"])
-This week: [Xml] of ${quota_ml}ml ([%]% of ${quotaLiters}L quota)
+This week: [estimated range] against ${quota_ml}ml personal budget ([%]% using midpoint only)
 On pace for: [projected weekly ml] — [physical comparison for projected total]
 Uncertainty: [state whether token counts are exact or estimated]
 [One plain-English sentence comparing only against the user's chosen personal budget.]
@@ -1475,12 +1475,12 @@ Uncertainty: [state whether token counts are exact or estimated]
 4. If today is the 15th → also show Mid-Month Pulse.
 
 THRESHOLD ALERTS — fire automatically mid-conversation:
-• ${(quotaLiters * 0.5).toFixed(1)}L / 50%: 💧 Halfway through your ${quotaLiters}L weekly quota.
-• ${(quotaLiters * 0.75).toFixed(1)}L / 75%: 💧 75% of weekly quota used. ${(quotaLiters * 0.25).toFixed(2)}L left.
-• ${(quotaLiters * 0.90).toFixed(1)}L / 90%: 💧 90% reached. ~${(quotaLiters * 0.10).toFixed(2)}L remaining this week.
-• ${(quotaLiters * 0.95).toFixed(1)}L / 95%: 💧 Nearly out. Keep responses tight.
-• ${quotaLiters}L / 100%: 💧 Weekly quota hit. Every token from here is over. Not a hard stop — just worth knowing.
-• ${(quotaLiters * 1.1).toFixed(1)}L / 110%: 💧 10% over quota. You set the line. You crossed it. No lecture — just the data.
+• ${Math.round(quotaMl * 0.5)}ml / 50%: 💧 Halfway through your ${quotaMl}ml personal weekly budget (midpoint scenario).
+• ${Math.round(quotaMl * 0.75)}ml / 75%: 💧 75% of personal budget used at the midpoint. ${Math.round(quotaMl * 0.25)}ml left.
+• ${Math.round(quotaMl * 0.90)}ml / 90%: 💧 90% reached at the midpoint. ~${Math.round(quotaMl * 0.10)}ml remaining this week.
+• ${Math.round(quotaMl * 0.95)}ml / 95%: 💧 Nearly at your personal budget. Keep responses tight if that still serves the task.
+• ${quotaMl}ml / 100%: 💧 Personal weekly budget hit at the midpoint scenario. Not a hard stop — just worth knowing.
+• ${Math.round(quotaMl * 1.1)}ml / 110%: 💧 10% over your personal budget at the midpoint scenario. No lecture — just the estimate.
 
 SESSION TRACKING:
 Track exact input/output tokens only if the platform exposes them. Otherwise estimate conservatively and label the estimate. Never present inferred token counts as measured telemetry.
@@ -1555,7 +1555,7 @@ function pingAnalytics(event, platform) {
     fetch(ENDPOINT + '/ping', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid, event, platform, quota: quotaLiters, ts: Date.now() })
+      body: JSON.stringify({ uid, event, platform, quota_ml: quotaMl, methodology: 'v1.1', ts: Date.now() })
     }).catch(() => {}); // silent fail — never block the user
   } catch(e) {}
 }
