@@ -1348,7 +1348,7 @@ const PLATFORMS = [
 //  STATE
 // ══════════════════════════════════════════
 
-let quotaLiters = 10;
+let quotaMl = 100;
 let selectedPlatforms = new Set(['claude']);
 let consentGranted = true;
 
@@ -1371,13 +1371,13 @@ function saveLog(l) { localStorage.setItem('tw_log', JSON.stringify(l)); }
 // ══════════════════════════════════════════
 
 function updateQuota(val) {
-  quotaLiters = parseInt(val);
-  document.getElementById('quota-display').textContent = quotaLiters + 'L';
-  document.getElementById('quota-tokens').textContent = Math.round((quotaLiters * 1000 / WATER_RATES.mid) * 1000).toLocaleString();
+  quotaMl = parseInt(val);
+  document.getElementById('quota-display').textContent = quotaMl + 'mL';
+  document.getElementById('quota-tokens').textContent = Math.round((quotaMl / WATER_RATES.mid) * 1000).toLocaleString();
   const ctx = 'Personal awareness budget. This is not a population benchmark; adjust it to your own goal.';
   document.getElementById('quota-context').textContent = ctx;
   // Show water comparison
-  const comp = waterComparison(quotaLiters * 1000);
+  const comp = waterComparison(quotaMl);
   document.getElementById('quota-comparison').textContent = '≈ ' + comp + ' per week';
   renderSnippets();
 }
@@ -1432,10 +1432,10 @@ function setConsent(val) {
 
 function generateSnippet(platformId) {
   const uid = consentGranted ? getUserId() : null;
-  const quota_ml = quotaLiters * 1000;
-  const quota_tokens = Math.round((quotaLiters * 1000 / WATER_RATES.mid) * 1000);
+  const quota_ml = quotaMl;
+  const quota_tokens = Math.round((quotaMl / WATER_RATES.mid) * 1000);
   const refreshUrl = 'lesterhau.github.io/tokenwater';
-  const weeklyComparison = waterComparison(quotaLiters * 1000);
+  const weeklyComparison = waterComparison(quotaMl);
 
   const idLine = uid
     ? `TokenWater ID: ${uid} | Registered: ${new Date().toLocaleDateString()}`
@@ -1716,7 +1716,7 @@ function showToast(msg) {
 // ══════════════════════════════════════════
 
 getUserId(); // generate ID on first load
-updateQuota(10); // init quota display including water comparison
+updateQuota(100); // init personal mL budget display
 renderPlatformList();
 renderSnippets();
 renderApiGrid();
