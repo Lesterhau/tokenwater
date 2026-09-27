@@ -1447,8 +1447,11 @@ function generateSnippet(platformId) {
 TOKENWATER TRACKING — Active
 ${idLine}
 Weekly quota: ${quotaLiters} liters (~${quota_tokens.toLocaleString()} tokens) — roughly ${weeklyComparison} per week
-Formula: ~100ml per 1,000 tokens processed
-Benchmarks: Casual ~1L/wk | Regular ~3L/wk | Power ~7L/wk
+Methodology: directional estimate, not measured water use.
+If exact token telemetry exists, use it. Otherwise label token counts as estimated.
+Effective tokens = output + (0.20 × fresh input).
+Illustrative direct-cooling scenarios per 1,000 effective tokens: low 0.036ml | mid 0.36ml | high 0.79ml.
+Do not compare the user with invented population benchmarks.
 
 RUNNING WEEKLY LOG (update this block at end of each conversation):
 Week of: [update to current week's Monday]
@@ -1466,10 +1469,8 @@ FIRST MESSAGE OF EACH CONVERSATION:
 Yesterday: [X tokens / Yml] (~[physical comparison, e.g. "about 2 water bottles"])
 This week: [Xml] of ${quota_ml}ml ([%]% of ${quotaLiters}L quota)
 On pace for: [projected weekly ml] — [physical comparison for projected total]
-vs. Casual (1L/wk): [above/below by Xml]
-vs. Regular (3L/wk): [above/below by Xml]
-vs. Power user (7L/wk): [above/below by Xml]
-[One plain-English sentence. E.g. "You're on pace for a light week — well under your quota."]
+Uncertainty: [state whether token counts are exact or estimated]
+[One plain-English sentence comparing only against the user's chosen personal budget.]
 
 3. If today is Monday → also show Weekly Summary.
 4. If today is the 15th → also show Mid-Month Pulse.
@@ -1483,7 +1484,7 @@ THRESHOLD ALERTS — fire automatically mid-conversation:
 • ${(quotaLiters * 1.1).toFixed(1)}L / 110%: 💧 10% over quota. You set the line. You crossed it. No lecture — just the data.
 
 SESSION TRACKING:
-Track tokens used in this conversation (input + output combined).
+Track exact input/output tokens only if the platform exposes them. Otherwise estimate conservatively and label the estimate. Never present inferred token counts as measured telemetry.
 
 END OF EVERY CONVERSATION:
 Output updated RUNNING WEEKLY LOG block with today's totals added, then say:
@@ -1500,7 +1501,7 @@ When reporting that usage is well below quota or below the average user, add one
 
 SHAREABLE STAT:
 When showing any weekly summary, append one ready-to-post line:
-My AI usage this week: [X]L of water — roughly [physical comparison]. Tracked with TokenWater. #TokenWater #AIWaterCost lesterhau.github.io/tokenwater`;
+My AI usage this week: an estimated [low–high range] of direct-cooling water under TokenWater's published scenarios. #TokenWater #AIWaterCost lesterhau.github.io/tokenwater`;
 }
 
 function renderSnippets() {
