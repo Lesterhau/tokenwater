@@ -1635,14 +1635,19 @@ function logUsage() {
   if (!input && !output) { showToast('Enter token counts'); return; }
   const log = loadLog();
   const p = PLATFORMS.find(x => x.id === platform);
+  const effectiveTokens = output + (input * INPUT_TOKEN_WEIGHT);
+  const waterLow = effectiveTokens / 1000 * WATER_RATES.low;
+  const waterMid = effectiveTokens / 1000 * WATER_RATES.mid;
+  const waterHigh = effectiveTokens / 1000 * WATER_RATES.high;
   log.push({ id: Date.now(), platform, name: p?.name || platform,
-    input, output, total: input+output,
-    water_ml: Math.round((input+output)/1000*WATER_RATE),
+    input, output, total: input+output, effective_tokens: effectiveTokens,
+    water_low_ml: waterLow, water_mid_ml: waterMid, water_high_ml: waterHigh,
+    methodology: 'v1.1-direct-cooling-scenarios',
     ts: new Date().toISOString() });
   saveLog(log);
   document.getElementById('log-input').value = '';
   document.getElementById('log-output').value = '';
-  showToast('Logged — ' + formatWater(Math.round((input+output)/1000*WATER_RATE)));
+  showToast('Logged — estimated ' + formatWaterRange(waterLow, waterHigh));
   renderLog();
 }
 
@@ -1655,7 +1660,7 @@ function renderLog() {
       <td>${new Date(e.ts).toLocaleDateString()}</td>
       <td>${e.name}</td>
       <td>${e.total.toLocaleString()}</td>
-      <td>${formatWater(e.water_ml)}</td>
+      <td>${e.water_low_ml != null ? formatWaterRange(e.water_low_ml, e.water_high_ml) : formatWater(e.water_ml) + ' (legacy)'}</td>
       <td><button class="btn btn-outline" style="padding:3px 10px;font-size:0.72rem;" onclick="deleteEntry(${e.id})">Remove</button></td>
     </tr>`).join('');
   container.innerHTML = `<table class="usage-table">
@@ -1670,7 +1675,14 @@ function deleteEntry(id) { saveLog(loadLog().filter(e => e.id !== id)); renderLo
 // ══════════════════════════════════════════
 
 function formatWater(ml) {
-  return ml >= 1000 ? (ml/1000).toFixed(2) + 'L' : ml + 'ml';
+  if (ml >= 1000) return (ml/1000).toFixed(2) + 'L';
+  if (ml >= 10) return ml.toFixed(1) + 'ml';
+  if (ml >= 1) return ml.toFixed(2) + 'ml';
+  return ml.toFixed(3) + 'ml';
+}
+
+function formatWaterRange(low, high) {
+  return formatWater(low) + '–' + formatWater(high);
 }
 
 function waterComparison(ml) {
