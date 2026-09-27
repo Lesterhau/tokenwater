@@ -1008,10 +1008,10 @@
   <div class="hero-inner">
     <div class="hero-eyebrow">💧 AI Infrastructure Accountability</div>
     <h1 class="hero-title">Every prompt you send<br><em>costs water.</em><br>Now you can track it.</h1>
-    <p class="hero-body">AI data centers consumed billions of liters of water last year. Microsoft: +34%. Google: +20%. No one tells you your share. TokenWater generates a memory snippet you paste into your AI tools once — after that, your AI tracks your usage automatically.</p>
+    <p class="hero-body">AI data centers consume substantial water, but an individual's share is not directly measurable from a chat window. TokenWater turns token activity into a transparent, scenario-based estimate and keeps the uncertainty visible.</p>
     <div class="hero-callout">
       <span style="flex-shrink:0;">✓</span>
-      <span>You do <strong>not</strong> need to keep this page open. Paste once. Done.</span>
+      <span><strong>Directional estimate, not a physical meter.</strong> Exactness depends on whether your AI platform exposes token telemetry.</span>
     </div>
   </div>
 </div>
@@ -1025,27 +1025,27 @@
       <div class="step-num">1</div>
       <div class="step-tag">Set your goal</div>
     </div>
-    <h2 class="step-title">Choose your weekly water quota</h2>
-    <p class="step-desc">Your AI will track toward this limit and alert you automatically at 50%, 75%, 90%, and 95%. Every morning, your first conversation will show you yesterday's usage and your pace for the week.</p>
+    <h2 class="step-title">Choose a personal weekly awareness budget</h2>
+    <p class="step-desc">This is a personal behavior target, not a population benchmark. Where exact token telemetry is unavailable, the estimate should be treated as approximate.</p>
     <div class="quota-card">
       <div class="quota-top">
-        <div class="quota-big" id="quota-display">10L</div>
+        <div class="quota-big" id="quota-display">100mL</div>
         <div class="quota-right">
-          <div class="quota-unit">liters per week</div>
-          <div class="quota-tokens">~<span id="quota-tokens">100,000</span> tokens</div>
+          <div class="quota-unit">mL estimated direct cooling per week</div>
+          <div class="quota-tokens">~<span id="quota-tokens">277,778</span> effective tokens at the midpoint scenario</div>
         </div>
       </div>
-      <input type="range" id="quota-slider" min="1" max="30" value="10" oninput="updateQuota(this.value)">
+      <input type="range" id="quota-slider" min="10" max="500" step="10" value="100" oninput="updateQuota(this.value)">
       <div class="quota-marks">
-        <span>1L casual</span>
-        <span>3L regular</span>
-        <span>7L power</span>
-        <span>15L heavy</span>
-        <span>30L</span>
+        <span>10mL</span>
+        <span>50mL</span>
+        <span>100mL</span>
+        <span>250mL</span>
+        <span>500mL</span>
       </div>
       <hr class="quota-divider">
-      <p style="font-size:0.78rem;font-weight:600;color:var(--blue-600);margin-bottom:8px;" id="quota-comparison">≈ roughly one toilet flush per week</p>
-      <p class="quota-context" id="quota-context">Power user range. Long sessions, multiple platforms, research-heavy work. A single long research conversation typically uses 1–2L.</p>
+      <p style="font-size:0.78rem;font-weight:600;color:var(--blue-600);margin-bottom:8px;" id="quota-comparison">≈ less than half a water bottle under the midpoint scenario</p>
+      <p class="quota-context" id="quota-context">Personal awareness budget. This is not a population benchmark, and real deployments can fall outside the scenario band.</p>
     </div>
   </div>
 
@@ -1161,22 +1161,24 @@
       </div>
 
       <div class="advanced-section">
-        <div class="advanced-section-title">The Water Math</div>
+        <div class="advanced-section-title">The Water Math — uncertainty-first</div>
         <div class="about-cards">
           <div class="about-card">
             <div class="about-card-title">The Proxy Metric</div>
-            <div class="about-card-body">~100ml of water consumed per 1,000 tokens processed. Derived from data center PUE data and cooling water intensity ratios. Directional estimate — actual consumption varies by provider, region, and model.</div>
+            <div class="about-card-body">There is no universal water-per-token constant. Manual logs use low/mid/high direct-cooling scenarios based on modern inference-energy measurements and published water-efficiency assumptions. See METHODOLOGY.md for scope and limitations.</div>
           </div>
           <div class="about-card">
             <div class="about-card-title">Sources</div>
             <div class="about-card-body">
-              Li, P. et al. (2023). "Making AI Less Thirsty." UC Riverside. <a href="https://arxiv.org/abs/2304.03271" target="_blank">arxiv.org/abs/2304.03271</a><br><br>
-              Luccioni et al. (2023). "Power Hungry Processing." <a href="https://arxiv.org/abs/2311.16863" target="_blank">arxiv.org/abs/2311.16863</a>
+              ML.ENERGY Benchmark (NeurIPS 2025): <a href="https://ml.energy/leaderboard/" target="_blank">ml.energy/leaderboard</a><br><br>
+              Li et al. (CACM 2025): <a href="https://doi.org/10.1145/3724499" target="_blank">doi.org/10.1145/3724499</a><br><br>
+              Google production measurement (2025): <a href="https://cloud.google.com/blog/products/infrastructure/measuring-the-environmental-impact-of-ai-inference" target="_blank">methodology</a><br><br>
+              <a href="https://github.com/Lesterhau/tokenwater/blob/main/METHODOLOGY.md" target="_blank">Full methodology and limitations →</a>
             </div>
           </div>
           <div class="about-card">
             <div class="about-card-title">The Real Numbers</div>
-            <div class="about-card-body">Microsoft: 6.4 billion liters in 2022 (+34% YoY). Google: +20% same period. Neither provides per-user breakdowns. TokenWater is the individual meter that doesn't otherwise exist.</div>
+            <div class="about-card-body">Public evidence supports a significant aggregate AI water footprint, but per-user attribution remains uncertain. TokenWater is an estimator designed to expose assumptions rather than claim direct measurement.</div>
           </div>
           <div class="about-card">
             <div class="about-card-title">Built By</div>
@@ -1211,7 +1213,8 @@
 //  CONFIG
 // ══════════════════════════════════════════
 
-const WATER_RATE = 100; // ml per 1000 tokens
+const WATER_RATES = Object.freeze({ low: 0.036, mid: 0.36, high: 0.79 });
+const INPUT_TOKEN_WEIGHT = 0.20;
 
 const PLATFORMS = [
   // ── PERSISTENT MEMORY ──────────────────────────────────
@@ -1232,10 +1235,9 @@ const PLATFORMS = [
     memType: 'persistent', apiPlaceholder: 'sk-...',
     instructions: [
       { t: 'Open ChatGPT in your browser or the app — memory syncs across both' },
-      { t: 'Start a new conversation' },
-      { t: 'Paste the snippet and hit send — the opening line tells ChatGPT to save it to memory' },
-      { t: 'ChatGPT will confirm: "I\'ve saved this to my memory." If it just reads it back without confirming, say "Please save that to your memory" explicitly' },
-      { t: '<strong>Verify:</strong> Settings → Personalization → Manage memories — you should see TokenWater entries listed' },
+      { t: 'Start a new conversation and paste the snippet' },
+      { t: 'Ask ChatGPT to keep the TokenWater tracking preference in memory/context where your account supports it' },
+      { t: '<strong>Verify:</strong> Settings → Personalization → review your Memory summary/settings. Memory behavior can vary by account and product version.' },
     ]
   },
   {
@@ -1348,7 +1350,7 @@ const PLATFORMS = [
 //  STATE
 // ══════════════════════════════════════════
 
-let quotaLiters = 10;
+let quotaMl = 100;
 let selectedPlatforms = new Set(['claude']);
 let consentGranted = true;
 
@@ -1371,17 +1373,13 @@ function saveLog(l) { localStorage.setItem('tw_log', JSON.stringify(l)); }
 // ══════════════════════════════════════════
 
 function updateQuota(val) {
-  quotaLiters = parseInt(val);
-  document.getElementById('quota-display').textContent = quotaLiters + 'L';
-  document.getElementById('quota-tokens').textContent = (quotaLiters * 10000).toLocaleString();
-  const ctx = quotaLiters <= 2 ? 'Casual user. 1–3 short conversations per day.'
-    : quotaLiters <= 5 ? 'Regular user. A few moderate conversations per day.'
-    : quotaLiters <= 10 ? 'Power user. Long sessions, multiple platforms, research-heavy work.'
-    : quotaLiters <= 20 ? 'Heavy user. Extended coding, research, or multi-platform professional work.'
-    : 'Extreme usage. You are running AI at a professional or developer scale.';
+  quotaMl = parseInt(val);
+  document.getElementById('quota-display').textContent = quotaMl + 'mL';
+  document.getElementById('quota-tokens').textContent = Math.round((quotaMl / WATER_RATES.mid) * 1000).toLocaleString();
+  const ctx = 'Personal awareness budget. This is not a population benchmark; adjust it to your own goal.';
   document.getElementById('quota-context').textContent = ctx;
   // Show water comparison
-  const comp = waterComparison(quotaLiters * 1000);
+  const comp = waterComparison(quotaMl);
   document.getElementById('quota-comparison').textContent = '≈ ' + comp + ' per week';
   renderSnippets();
 }
@@ -1436,10 +1434,10 @@ function setConsent(val) {
 
 function generateSnippet(platformId) {
   const uid = consentGranted ? getUserId() : null;
-  const quota_ml = quotaLiters * 1000;
-  const quota_tokens = quotaLiters * 10000;
+  const quota_ml = quotaMl;
+  const quota_tokens = Math.round((quotaMl / WATER_RATES.mid) * 1000);
   const refreshUrl = 'lesterhau.github.io/tokenwater';
-  const weeklyComparison = waterComparison(quotaLiters * 1000);
+  const weeklyComparison = waterComparison(quotaMl);
 
   const idLine = uid
     ? `TokenWater ID: ${uid} | Registered: ${new Date().toLocaleDateString()}`
@@ -1449,14 +1447,17 @@ function generateSnippet(platformId) {
 
 TOKENWATER TRACKING — Active
 ${idLine}
-Weekly quota: ${quotaLiters} liters (~${quota_tokens.toLocaleString()} tokens) — roughly ${weeklyComparison} per week
-Formula: ~100ml per 1,000 tokens processed
-Benchmarks: Casual ~1L/wk | Regular ~3L/wk | Power ~7L/wk
+Weekly personal budget: ${quotaMl}ml (~${quota_tokens.toLocaleString()} effective tokens at the midpoint scenario) — roughly ${weeklyComparison}
+Methodology: directional estimate, not measured water use.
+If exact token telemetry exists, use it. Otherwise label token counts as estimated.
+Effective tokens = output + (0.20 × fresh input).
+Illustrative direct-cooling scenarios per 1,000 effective tokens: low 0.036ml | mid 0.36ml | high 0.79ml.
+Do not compare the user with invented population benchmarks.
 
 RUNNING WEEKLY LOG (update this block at end of each conversation):
 Week of: [update to current week's Monday]
 Mon: 0 | Tue: 0 | Wed: 0 | Thu: 0 | Fri: 0 | Sat: 0 | Sun: 0
-Weekly total: 0 tokens / 0ml / 0% of ${quotaLiters}L quota
+Weekly total: 0 tokens / estimated 0ml / 0% of ${quotaMl}ml personal budget
 Last week: 0ml | This month: 0ml
 
 INSTRUCTIONS — execute silently:
@@ -1467,26 +1468,24 @@ FIRST MESSAGE OF EACH CONVERSATION:
 
 💧 TokenWater Morning Report — [today's date]
 Yesterday: [X tokens / Yml] (~[physical comparison, e.g. "about 2 water bottles"])
-This week: [Xml] of ${quota_ml}ml ([%]% of ${quotaLiters}L quota)
+This week: [estimated range] against ${quota_ml}ml personal budget ([%]% using midpoint only)
 On pace for: [projected weekly ml] — [physical comparison for projected total]
-vs. Casual (1L/wk): [above/below by Xml]
-vs. Regular (3L/wk): [above/below by Xml]
-vs. Power user (7L/wk): [above/below by Xml]
-[One plain-English sentence. E.g. "You're on pace for a light week — well under your quota."]
+Uncertainty: [state whether token counts are exact or estimated]
+[One plain-English sentence comparing only against the user's chosen personal budget.]
 
 3. If today is Monday → also show Weekly Summary.
 4. If today is the 15th → also show Mid-Month Pulse.
 
 THRESHOLD ALERTS — fire automatically mid-conversation:
-• ${(quotaLiters * 0.5).toFixed(1)}L / 50%: 💧 Halfway through your ${quotaLiters}L weekly quota.
-• ${(quotaLiters * 0.75).toFixed(1)}L / 75%: 💧 75% of weekly quota used. ${(quotaLiters * 0.25).toFixed(2)}L left.
-• ${(quotaLiters * 0.90).toFixed(1)}L / 90%: 💧 90% reached. ~${(quotaLiters * 0.10).toFixed(2)}L remaining this week.
-• ${(quotaLiters * 0.95).toFixed(1)}L / 95%: 💧 Nearly out. Keep responses tight.
-• ${quotaLiters}L / 100%: 💧 Weekly quota hit. Every token from here is over. Not a hard stop — just worth knowing.
-• ${(quotaLiters * 1.1).toFixed(1)}L / 110%: 💧 10% over quota. You set the line. You crossed it. No lecture — just the data.
+• ${Math.round(quotaMl * 0.5)}ml / 50%: 💧 Halfway through your ${quotaMl}ml personal weekly budget (midpoint scenario).
+• ${Math.round(quotaMl * 0.75)}ml / 75%: 💧 75% of personal budget used at the midpoint. ${Math.round(quotaMl * 0.25)}ml left.
+• ${Math.round(quotaMl * 0.90)}ml / 90%: 💧 90% reached at the midpoint. ~${Math.round(quotaMl * 0.10)}ml remaining this week.
+• ${Math.round(quotaMl * 0.95)}ml / 95%: 💧 Nearly at your personal budget. Keep responses tight if that still serves the task.
+• ${quotaMl}ml / 100%: 💧 Personal weekly budget hit at the midpoint scenario. Not a hard stop — just worth knowing.
+• ${Math.round(quotaMl * 1.1)}ml / 110%: 💧 10% over your personal budget at the midpoint scenario. No lecture — just the estimate.
 
 SESSION TRACKING:
-Track tokens used in this conversation (input + output combined).
+Track exact input/output tokens only if the platform exposes them. Otherwise estimate conservatively and label the estimate. Never present inferred token counts as measured telemetry.
 
 END OF EVERY CONVERSATION:
 Output updated RUNNING WEEKLY LOG block with today's totals added, then say:
@@ -1503,7 +1502,7 @@ When reporting that usage is well below quota or below the average user, add one
 
 SHAREABLE STAT:
 When showing any weekly summary, append one ready-to-post line:
-My AI usage this week: [X]L of water — roughly [physical comparison]. Tracked with TokenWater. #TokenWater #AIWaterCost lesterhau.github.io/tokenwater`;
+My AI usage this week: an estimated [low–high range] of direct-cooling water under TokenWater's published scenarios. #TokenWater #AIWaterCost lesterhau.github.io/tokenwater`;
 }
 
 function renderSnippets() {
@@ -1558,7 +1557,7 @@ function pingAnalytics(event, platform) {
     fetch(ENDPOINT + '/ping', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uid, event, platform, quota: quotaLiters, ts: Date.now() })
+      body: JSON.stringify({ uid, event, platform, quota_ml: quotaMl, methodology: 'v1.1', ts: Date.now() })
     }).catch(() => {}); // silent fail — never block the user
   } catch(e) {}
 }
@@ -1637,14 +1636,19 @@ function logUsage() {
   if (!input && !output) { showToast('Enter token counts'); return; }
   const log = loadLog();
   const p = PLATFORMS.find(x => x.id === platform);
+  const effectiveTokens = output + (input * INPUT_TOKEN_WEIGHT);
+  const waterLow = effectiveTokens / 1000 * WATER_RATES.low;
+  const waterMid = effectiveTokens / 1000 * WATER_RATES.mid;
+  const waterHigh = effectiveTokens / 1000 * WATER_RATES.high;
   log.push({ id: Date.now(), platform, name: p?.name || platform,
-    input, output, total: input+output,
-    water_ml: Math.round((input+output)/1000*WATER_RATE),
+    input, output, total: input+output, effective_tokens: effectiveTokens,
+    water_low_ml: waterLow, water_mid_ml: waterMid, water_high_ml: waterHigh,
+    methodology: 'v1.1-direct-cooling-scenarios',
     ts: new Date().toISOString() });
   saveLog(log);
   document.getElementById('log-input').value = '';
   document.getElementById('log-output').value = '';
-  showToast('Logged — ' + formatWater(Math.round((input+output)/1000*WATER_RATE)));
+  showToast('Logged — estimated ' + formatWaterRange(waterLow, waterHigh));
   renderLog();
 }
 
@@ -1657,7 +1661,7 @@ function renderLog() {
       <td>${new Date(e.ts).toLocaleDateString()}</td>
       <td>${e.name}</td>
       <td>${e.total.toLocaleString()}</td>
-      <td>${formatWater(e.water_ml)}</td>
+      <td>${e.water_low_ml != null ? formatWaterRange(e.water_low_ml, e.water_high_ml) : formatWater(e.water_ml) + ' (legacy)'}</td>
       <td><button class="btn btn-outline" style="padding:3px 10px;font-size:0.72rem;" onclick="deleteEntry(${e.id})">Remove</button></td>
     </tr>`).join('');
   container.innerHTML = `<table class="usage-table">
@@ -1672,7 +1676,14 @@ function deleteEntry(id) { saveLog(loadLog().filter(e => e.id !== id)); renderLo
 // ══════════════════════════════════════════
 
 function formatWater(ml) {
-  return ml >= 1000 ? (ml/1000).toFixed(2) + 'L' : ml + 'ml';
+  if (ml >= 1000) return (ml/1000).toFixed(2) + 'L';
+  if (ml >= 10) return ml.toFixed(1) + 'ml';
+  if (ml >= 1) return ml.toFixed(2) + 'ml';
+  return ml.toFixed(3) + 'ml';
+}
+
+function formatWaterRange(low, high) {
+  return formatWater(low) + '–' + formatWater(high);
 }
 
 function waterComparison(ml) {
@@ -1707,7 +1718,7 @@ function showToast(msg) {
 // ══════════════════════════════════════════
 
 getUserId(); // generate ID on first load
-updateQuota(10); // init quota display including water comparison
+updateQuota(100); // init personal mL budget display
 renderPlatformList();
 renderSnippets();
 renderApiGrid();
