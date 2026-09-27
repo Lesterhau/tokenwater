@@ -72,11 +72,12 @@ Every morning, your first conversation shows you:
 
 Modern measurements show large variation by model, hardware, serving configuration, query type, cooling system, climate, and electricity source. TokenWater is moving to a versioned low/mid/high scenario methodology rather than presenting one fixed coefficient as measured reality. See [METHODOLOGY.md](METHODOLOGY.md).
 
-**Sources:**
-- Li, P. et al. (2023). "Making AI Less Thirsty." UC Riverside. https://arxiv.org/abs/2304.03271
-- Luccioni, A.S. et al. (2023). "Power Hungry Processing." https://arxiv.org/abs/2311.16863
-- Microsoft 2022 Environmental Sustainability Report
-- Google 2022 Environmental Report
+**Current sources:**
+- Chung, J.-W. et al. (2025). "The ML.ENERGY Benchmark." NeurIPS Datasets & Benchmarks. https://ml.energy/leaderboard/
+- Li, P. et al. (2025). "Making AI Less 'Thirsty'." Communications of the ACM. https://doi.org/10.1145/3724499
+- Google (2025). "Measuring the environmental impact of AI inference." https://cloud.google.com/blog/products/infrastructure/measuring-the-environmental-impact-of-ai-inference
+- Oviedo, F. et al. (2026). "Energy use of AI inference, efficiency pathways, and test-time scaling." Joule. https://doi.org/10.1016/j.joule.2026.102430
+- Data-center workload water-use review (2025). Resources, Conservation & Recycling. https://doi.org/10.1016/j.resconrec.2025.108310
 
 If the methodology is wrong, open an issue and cite your source.
 
